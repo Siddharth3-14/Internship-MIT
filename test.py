@@ -1,4 +1,3 @@
-Internship-MIT
 from os import sep
 import numpy as np
 import matplotlib.pyplot as plt
