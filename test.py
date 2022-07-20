@@ -162,13 +162,28 @@ for i in range(RA_grid.shape[0]):
 
 
 plt.figure()
-ax1 = plt.subplot(121)
+ax1 = plt.subplot(131)
 ax1.imshow(S_map.data,origin='lower')
-ax2 = plt.subplot(122)
+ax2 = plt.subplot(132)
 ax2.imshow(S_map_v2.data,origin='lower')
+ax3 = plt.subplot(133)
+ax3.imshow(S_map.data-S_map_v2.data,origin='lower')
+ax1.set_title('S map old')
+ax2.set_title('S map new')
+ax3.set_title('S map old - S map new')
 plt.show()
 
+adf_v1 = S_map.data.flatten()
+adf_v2 = S_map_v2.data.flatten()
 
+plt.figure()
+ax1 = plt.subplot(121)
+ax1.scatter(adf_v1,adf_v2)
+ax2 = plt.subplot(122)
+ax2.plot(adf_v1-adf_v2)
+ax1.set_title('S map old vs S map new')
+ax2.set_title('S map old - S map new')
+plt.show()
 # s_map_array = S_map.data.flatten()
 # Pol_array = BlankedMapPol.data.flatten()
 
