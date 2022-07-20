@@ -152,7 +152,7 @@ for i in range(RA_grid.shape[0]):
         ##### second version
         tempa = BlankedMapStokesQ.data*BlankedMapStokesU.data[i,j] - BlankedMapStokesQ.data[i,j]*BlankedMapStokesU.data
         tempb = BlankedMapStokesQ.data*BlankedMapStokesQ.data[i,j] + BlankedMapStokesU.data*BlankedMapStokesU.data[i,j]
-        AngleDiff_v2 = 0.5*np.arctan(tempa/tempb)
+        AngleDiff_v2 = 0.5*(180/np.pi)*np.arctan(tempa/tempb)
         Angle_selector_v2 =AngleDiff_v2>90
         AngleDiff_v2[Angle_selector_v2] = AngleDiff_v2[Angle_selector_v2] - 180
         Angle_selector_v2 = AngleDiff_v2<-90
@@ -161,53 +161,53 @@ for i in range(RA_grid.shape[0]):
         S_map_v2.data[i,j] = S_v2
 
 
-# plt.figure()
-# ax1 = plt.subplot(121)
-# ax1.imshow(S_map.data)
-# ax2 = plt.subplot(122)
-# ax2.imshow(S_map_v2.data)
+plt.figure()
+ax1 = plt.subplot(121)
+ax1.imshow(S_map.data,origin='lower')
+ax2 = plt.subplot(122)
+ax2.imshow(S_map_v2.data,origin='lower')
+plt.show()
+
+
+# s_map_array = S_map.data.flatten()
+# Pol_array = BlankedMapPol.data.flatten()
+
+# y_min = np.nanmin(Pol_array)
+# y_max = 20
+  
+# x_min = np.nanmin(s_map_array)
+# x_max = np.nanmax(s_map_array)
+  
+# x_bins = np.arange(x_min, x_max, 0.5)
+# y_bins = np.arange(y_min, y_max, 0.5)
+
+# fig = plt.subplots(figsize =(10, 10))
+# # Creating plot
+# plt.hist2d(s_map_array,Pol_array,bins =[x_bins, y_bins])
+# plt.title("P X S 2D histogram")
+# plt.ylabel('P [%]')
+# plt.xlabel('S [deg]')
 # plt.show()
 
 
-s_map_array = S_map.data.flatten()
-Pol_array = BlankedMapPol.data.flatten()
+# I_map_array = BlankedMapStokesI.data.flatten()
 
-y_min = np.nanmin(Pol_array)
-y_max = 20
+# y_min = np.nanmin(Pol_array)
+# y_max = 20
   
-x_min = np.nanmin(s_map_array)
-x_max = np.nanmax(s_map_array)
+# x_min = np.nanmin(I_map_array)
+# x_max = np.nanmax(I_map_array)
   
-x_bins = np.arange(x_min, x_max, 0.5)
-y_bins = np.arange(y_min, y_max, 0.5)
+# x_bins = np.arange(x_min, x_max, 1)
+# y_bins = np.arange(y_min, y_max, 0.25)
 
-fig = plt.subplots(figsize =(10, 10))
-# Creating plot
-plt.hist2d(s_map_array,Pol_array,bins =[x_bins, y_bins])
-plt.title("P X S 2D histogram")
-plt.ylabel('P [%]')
-plt.xlabel('S [deg]')
-plt.show()
-
-
-I_map_array = BlankedMapStokesI.data.flatten()
-
-y_min = np.nanmin(Pol_array)
-y_max = 20
-  
-x_min = np.nanmin(I_map_array)
-x_max = np.nanmax(I_map_array)
-  
-x_bins = np.arange(x_min, x_max, 1)
-y_bins = np.arange(y_min, y_max, 0.25)
-
-fig = plt.subplots(figsize =(10, 10))
-# Creating plot
-plt.hist2d(I_map_array,Pol_array,bins =[x_bins, y_bins])
-plt.title("P X I 2D histogram")
-plt.ylabel('P [%]')
-plt.xlabel('I ')
-plt.show()
+# fig = plt.subplots(figsize =(10, 10))
+# # Creating plot
+# plt.hist2d(I_map_array,Pol_array,bins =[x_bins, y_bins])
+# plt.title("P X I 2D histogram")
+# plt.ylabel('P [%]')
+# plt.xlabel('I ')
+# plt.show()
 
 
 
