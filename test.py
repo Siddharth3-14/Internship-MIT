@@ -127,6 +127,7 @@ print(S2)
 
 
 ########## Running the algorithm on each cell
+set_delta = 0.5   # in arcminute
 S_map = BlankedMapPolAngle.copy()
 S_map_v2 = BlankedMapPolAngle.copy()
 for i in range(RA_grid.shape[0]):
@@ -134,32 +135,40 @@ for i in range(RA_grid.shape[0]):
 
         ##### seperation filter
         seperation.data = Calc_l(RA_grid[i,j],DEC_grid[i,j],RA_grid,DEC_grid)
-        seperation_selector = (seperation.data<0.5*0.5)
+        seperation_selector = (seperation.data<0.5*set_delta)
         seperation.data[seperation_selector] = np.nan
-        seperation_selector = (seperation.data>1.5*0.5)
+        seperation_selector = (seperation.data>1.5*set_delta)
         seperation.data[seperation_selector] = np.nan
+        seperation_selector = (seperation.data >0)
 
+        
         ##### first version
         AngleDiff = BlankedMapPolAngle.data - BlankedMapPolAngle.data[i,j]
         Angle_selector =AngleDiff>90
         AngleDiff[Angle_selector] = AngleDiff[Angle_selector] - 180
         Angle_selector = AngleDiff<-90
         AngleDiff[Angle_selector] = AngleDiff[Angle_selector] + 180
-        seperation_selector = (seperation.data >0)
+        
+        ## once more to take care of > 180 degree angle difference
+        Angle_selector =AngleDiff>90
+        AngleDiff[Angle_selector] = AngleDiff[Angle_selector] - 180
+        Angle_selector = AngleDiff<-90
+        AngleDiff[Angle_selector] = AngleDiff[Angle_selector] + 180
+        
         S = np.nanmean(AngleDiff[seperation_selector]**2)**0.5
         S_map.data[i,j] = S
 
+        
         ##### second version
         tempa = BlankedMapStokesQ.data*BlankedMapStokesU.data[i,j] - BlankedMapStokesQ.data[i,j]*BlankedMapStokesU.data
         tempb = BlankedMapStokesQ.data*BlankedMapStokesQ.data[i,j] + BlankedMapStokesU.data*BlankedMapStokesU.data[i,j]
-        AngleDiff_v2 = 0.5*(180/np.pi)*np.arctan(tempa/tempb)
-        Angle_selector_v2 =AngleDiff_v2>90
-        AngleDiff_v2[Angle_selector_v2] = AngleDiff_v2[Angle_selector_v2] - 180
-        Angle_selector_v2 = AngleDiff_v2<-90
-        AngleDiff_v2[Angle_selector_v2] = AngleDiff_v2[Angle_selector_v2] + 180
+        AngleDiff_v2 = 0.5 * (180/np.pi)*np.arctan2(tempa,tempb)
+        #Angle_selector_v2 =AngleDiff_v2>90
+        #AngleDiff_v2[Angle_selector_v2] = AngleDiff_v2[Angle_selector_v2] - 180
+        #Angle_selector_v2 = AngleDiff_v2<-90
+        #AngleDiff_v2[Angle_selector_v2] = AngleDiff_v2[Angle_selector_v2] + 180
         S_v2 = np.nanmean(AngleDiff_v2[seperation_selector]**2)**0.5
         S_map_v2.data[i,j] = S_v2
-
 
 plt.figure()
 ax1 = plt.subplot(131)
