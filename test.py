@@ -6,6 +6,7 @@ import pandas as pd
 from astropy.io import fits
 from astropy.table import Table
 from astropy.coordinates import SkyCoord
+from scipy.optimize import curve_fit
 
 
 def generate_RA_DEC_mesh(hdr):
@@ -42,31 +43,36 @@ def generate_RA_DEC_mesh(hdr):
     return DEC_grid,RA_grid
 
 def Calc_l(ra1,dec1,ra2,dec2):
-    """Calc_l
 
-    Find the seperation between two points on the celestial sphere located at points (ra1,dec1) and (ra2,dec2)
-    returns the value in armin
-
-    """
     c1 = SkyCoord(ra1,dec1,unit = 'deg')
     c2 = SkyCoord(ra2,dec2,unit = 'deg')
     sep = c1.separation(c2)
     return sep.arcminute
+    
+def wrapper(Angle_grid):
+    while ((np.nanmax(Angle_grid)>90) or (np.nanmin(Angle_grid)<-90)):
+        Angle_selector =Angle_grid>90
+        Angle_grid[Angle_selector] = Angle_grid[Angle_selector] - 180
+        Angle_selector = Angle_grid<-90
+        Angle_grid[Angle_selector] = Angle_grid[Angle_selector] + 180
+    return Angle_grid
 
 ########## importing and testing the file
-FITS1 = '../FITS_file/OMC_BandE.fits'
+########## importing and testing the file
+FITS1 = '../FITS_file/CygX_E_OTFMAP.fits'
 hdul = fits.open(FITS1)
 # print(hdul.info())
 MapStokesI = hdul[0]
 MapStokesQ = hdul[2]
 MapStokesU = hdul[4]
 MapDebPol = hdul[8]
+MapDebPolError = hdul[9]
 MapPolAngle = hdul[11]
 MapPolFlux = hdul[13]
 MapPolFluxError = hdul[14]
 
 
-MapPolSNR = MapPolFlux.copy()
+MapPolSNR = MapDebPol.copy()
 BlankedMapPol = MapDebPol.copy()
 BlankedMapPolAngle = MapPolAngle.copy()
 BlankedMapStokesI = MapStokesI.copy()
@@ -75,8 +81,8 @@ BlankedMapStokesU = MapStokesU.copy()
 
 ######## taking points only with singal to noise ratio more than 2
 MapPolSNR.data[:] = np.nan
-MapPolSNR.data = MapPolFlux.data/MapPolFluxError.data
-Selector = (MapPolSNR.data < 2)
+MapPolSNR.data = MapDebPol.data/MapDebPolError.data
+Selector = (MapPolSNR.data < 3)
 
 BlankedMapPol.data[Selector] = np.nan
 BlankedMapPolAngle.data[Selector] = np.nan
@@ -88,45 +94,53 @@ BlankedMapStokesU.data[Selector] = np.nan
 DEC_grid,RA_grid = generate_RA_DEC_mesh(hdul[0])
 seperation = MapPolAngle.copy()
 
+# plt.figure()
+# ax1 = plt.subplot(121)
+# ax2 = plt.subplot(122)
+# ax2.imshow(BlankedMapStokesI.data)
+# ax1.imshow(MapStokesI.data)
+# plt.show()
 
-############## Testing the algorithm at point x_index,y_index
+# ############## Testing the algorithm at point x_index,y_index
 
-x_index = 50
-y_index = 50
+# x_index = 50
+# y_index = 50
 
-############## making the filter for selecting points withing the ring
-seperation.data = Calc_l(RA_grid[x_index,y_index],DEC_grid[x_index,y_index],RA_grid,DEC_grid)
-seperation_selector = (seperation.data<0.5*0.5)
-seperation.data[seperation_selector] = np.nan
-seperation_selector = (seperation.data>1.5*0.5)
-seperation.data[seperation_selector] = np.nan
-
-
-############## first version
-AngleDiff = BlankedMapPolAngle.data - BlankedMapPolAngle.data[x_index,y_index]
-Angle_selector =AngleDiff>90
-AngleDiff[Angle_selector] = AngleDiff[Angle_selector] - 180
-Angle_selector = AngleDiff<-90
-AngleDiff[Angle_selector] = AngleDiff[Angle_selector] + 180
-seperation_selector = (seperation.data >0)
-S = np.nanmean(AngleDiff[seperation_selector]**2)**0.5
-print(S)
+# ############## making the filter for selecting points withing the ring
+# seperation.data = Calc_l(RA_grid[x_index,y_index],DEC_grid[x_index,y_index],RA_grid,DEC_grid)
+# seperation_selector = (seperation.data<0.5*0.5)
+# seperation.data[seperation_selector] = np.nan
+# seperation_selector = (seperation.data>1.5*0.5)
+# seperation.data[seperation_selector] = np.nan
 
 
-############ second version
-tempa = BlankedMapStokesQ.data*BlankedMapStokesU.data[x_index,y_index] - BlankedMapStokesQ.data[x_index,y_index]*BlankedMapStokesU.data
-tempb = BlankedMapStokesQ.data*BlankedMapStokesQ.data[x_index,y_index] + BlankedMapStokesU.data*BlankedMapStokesU.data[x_index,y_index]
+# ############## first version
+# AngleDiff = BlankedMapPolAngle.data - BlankedMapPolAngle.data[x_index,y_index]
+# Angle_selector =AngleDiff>90
+# AngleDiff[Angle_selector] = AngleDiff[Angle_selector] - 180
+# Angle_selector = AngleDiff<-90
+# AngleDiff[Angle_selector] = AngleDiff[Angle_selector] + 180
+# seperation_selector = (seperation.data >0)
+# S = np.nanmean(AngleDiff[seperation_selector]**2)**0.5
+# print(S)
 
-AngleDiff_v2 = (180/np.pi)*0.5*np.arctan(tempa/tempb)
-Angle_selector_v2 =AngleDiff_v2>90
-AngleDiff_v2[Angle_selector_v2] = AngleDiff_v2[Angle_selector_v2] - 180
-Angle_selector_v2 = AngleDiff_v2<-90
-AngleDiff_v2[Angle_selector_v2] = AngleDiff_v2[Angle_selector_v2] + 180
-S2 = np.nanmean(AngleDiff_v2[seperation_selector]**2)**0.5
-print(S2)
+
+# ############ second version
+# tempa = BlankedMapStokesQ.data*BlankedMapStokesU.data[x_index,y_index] - BlankedMapStokesQ.data[x_index,y_index]*BlankedMapStokesU.data
+# tempb = BlankedMapStokesQ.data*BlankedMapStokesQ.data[x_index,y_index] + BlankedMapStokesU.data*BlankedMapStokesU.data[x_index,y_index]
+
+# AngleDiff_v2 = (180/np.pi)*0.5*np.arctan(tempa/tempb)
+# Angle_selector_v2 =AngleDiff_v2>90
+# AngleDiff_v2[Angle_selector_v2] = AngleDiff_v2[Angle_selector_v2] - 180
+# Angle_selector_v2 = AngleDiff_v2<-90
+# AngleDiff_v2[Angle_selector_v2] = AngleDiff_v2[Angle_selector_v2] + 180
+# S2 = np.nanmean(AngleDiff_v2[seperation_selector]**2)**0.5
+# print(S2)
 
 
 ########## Running the algorithm on each cell
+
+
 set_delta = 0.5   # in arcminute
 S_map = BlankedMapPolAngle.copy()
 S_map_v2 = BlankedMapPolAngle.copy()
@@ -143,23 +157,24 @@ for i in range(RA_grid.shape[0]):
 
         
         ##### first version
-        AngleDiff = BlankedMapPolAngle.data - BlankedMapPolAngle.data[i,j]
-        Angle_selector =AngleDiff>90
-        AngleDiff[Angle_selector] = AngleDiff[Angle_selector] - 180
-        Angle_selector = AngleDiff<-90
-        AngleDiff[Angle_selector] = AngleDiff[Angle_selector] + 180
+        # AngleDiff = BlankedMapPolAngle.data - BlankedMapPolAngle.data[i,j]
+        # AngleDiff = wrapper(AngleDiff)
+        # # Angle_selector =AngleDiff>90
+        # # AngleDiff[Angle_selector] = AngleDiff[Angle_selector] - 180
+        # # Angle_selector = AngleDiff<-90
+        # # AngleDiff[Angle_selector] = AngleDiff[Angle_selector] + 180
         
-        ## once more to take care of > 180 degree angle difference
-        Angle_selector =AngleDiff>90
-        AngleDiff[Angle_selector] = AngleDiff[Angle_selector] - 180
-        Angle_selector = AngleDiff<-90
-        AngleDiff[Angle_selector] = AngleDiff[Angle_selector] + 180
-        
-        S = np.nanmean(AngleDiff[seperation_selector]**2)**0.5
-        S_map.data[i,j] = S
+        # # ## once more to take care of > 180 degree angle difference
+        # # Angle_selector =AngleDiff>90
+        # # AngleDiff[Angle_selector] = AngleDiff[Angle_selector] - 180
+        # # Angle_selector = AngleDiff<-90
+        # # AngleDiff[Angle_selector] = AngleDiff[Angle_selector] + 180
+
+        # S = np.nanmean(AngleDiff[seperation_selector]**2)**0.5
+        # S_map.data[i,j] = S
 
         
-        ##### second version
+        # ##### second version
         tempa = BlankedMapStokesQ.data*BlankedMapStokesU.data[i,j] - BlankedMapStokesQ.data[i,j]*BlankedMapStokesU.data
         tempb = BlankedMapStokesQ.data*BlankedMapStokesQ.data[i,j] + BlankedMapStokesU.data*BlankedMapStokesU.data[i,j]
         AngleDiff_v2 = 0.5 * (180/np.pi)*np.arctan2(tempa,tempb)
@@ -170,70 +185,76 @@ for i in range(RA_grid.shape[0]):
         S_v2 = np.nanmean(AngleDiff_v2[seperation_selector]**2)**0.5
         S_map_v2.data[i,j] = S_v2
 
-plt.figure()
-ax1 = plt.subplot(131)
-ax1.imshow(S_map.data,origin='lower')
-ax2 = plt.subplot(132)
-ax2.imshow(S_map_v2.data,origin='lower')
-ax3 = plt.subplot(133)
-ax3.imshow(S_map.data-S_map_v2.data,origin='lower')
-ax1.set_title('S map old')
-ax2.set_title('S map new')
-ax3.set_title('S map old - S map new')
-plt.show()
+# S_map_v2.writeto('dispersion.fits')
+# BlankedMapStokesI.writeto('intensity.fits')
+# BlankedMapPol.writeto('polarization_frac.fits')
 
-adf_v1 = S_map.data.flatten()
-adf_v2 = S_map_v2.data.flatten()
+# DEC_array = DEC_grid.flatten()
+# RA_array = RA_grid.flatten()
+# StokesI_array = BlankedMapStokesI.data.flatten()
+# S_array = S_map_v2.data.flatten()
+# P_array = BlankedMapPol.data.flatten()
 
-plt.figure()
-ax1 = plt.subplot(121)
-ax1.scatter(adf_v1,adf_v2)
-ax2 = plt.subplot(122)
-ax2.plot(adf_v1-adf_v2)
-ax1.set_title('S map old vs S map new')
-ax2.set_title('S map old - S map new')
-plt.show()
-# s_map_array = S_map.data.flatten()
-# Pol_array = BlankedMapPol.data.flatten()
+def lin_fit(x, a, b):
+    return a + b*x
 
-# y_min = np.nanmin(Pol_array)
-# y_max = 20
+s_array = S_map_v2.data.flatten()
+p_array = BlankedMapPol.data.flatten()
+I_array = BlankedMapStokesI.data.flatten()
+
+log_s = np.log(s_array)
+log_p = np.log(p_array)
+log_I = np.log(I_array)
+
+
+p_min = np.nanmin(log_p)
+p_max = np.log(50)
+s_min = np.nanmin(log_s)
+s_max = np.nanmax(log_s)
+I_min = np.nanmin(log_I)
+I_max = np.nanmax(log_I)
   
-# x_min = np.nanmin(s_map_array)
-# x_max = np.nanmax(s_map_array)
-  
-# x_bins = np.arange(x_min, x_max, 0.5)
-# y_bins = np.arange(y_min, y_max, 0.5)
 
-# fig = plt.subplots(figsize =(10, 10))
-# # Creating plot
-# plt.hist2d(s_map_array,Pol_array,bins =[x_bins, y_bins])
-# plt.title("P X S 2D histogram")
-# plt.ylabel('P [%]')
-# plt.xlabel('S [deg]')
+p_bins = np.arange(p_min, p_max, 0.075)
+s_bins = np.arange(s_min, s_max, 0.075)
+I_bins = np.arange(I_min, I_max, 0.075)
+
+df_log = pd.DataFrame({'logp': log_p,'logs':log_s,'logI':log_I})
+# df = df.dropna()
+df_log = df_log.dropna()
+
+# PS_param, PS_param_cov = curve_fit(lin_fit, df_log['logs'], df_log['logp'])
+# PS_FitFunc = lin_fit(s_bins,PS_param[0],PS_param[1])
+# print(PS_param[0],PS_param[1])
+
+
+# # Plotting log p vs log s 
+# fig = plt.subplots(figsize =(15, 10))
+# plt.hist2d(log_s,log_p,bins =[s_bins, p_bins])
+# label_temp = r'log(p) = C + $\alpha_s$log(S){linebreak} $\alpha_s$: {alpha_s:.4f} C: {C:.04f}'.format(alpha_s = PS_param[1],C = PS_param[0],linebreak='\n')
+# plt.plot(s_bins,PS_FitFunc,'r',linewidth=3,label = label_temp)
+# plt.title("log p X log S 2D histogram")
+# plt.ylabel('log p ')
+# plt.xlabel('log S ')
+# plt.legend()
+# plt.tight_layout()
 # plt.show()
 
+PI_param, PI_param_cov = curve_fit(lin_fit, df_log['logI'], df_log['logp'])
+PI_FitFunc = lin_fit(I_bins,PI_param[0],PI_param[1])
+# print(PI_param[0],PI_param[1])
 
-# I_map_array = BlankedMapStokesI.data.flatten()
-
-# y_min = np.nanmin(Pol_array)
-# y_max = 20
-  
-# x_min = np.nanmin(I_map_array)
-# x_max = np.nanmax(I_map_array)
-  
-# x_bins = np.arange(x_min, x_max, 1)
-# y_bins = np.arange(y_min, y_max, 0.25)
-
-# fig = plt.subplots(figsize =(10, 10))
-# # Creating plot
-# plt.hist2d(I_map_array,Pol_array,bins =[x_bins, y_bins])
-# plt.title("P X I 2D histogram")
-# plt.ylabel('P [%]')
-# plt.xlabel('I ')
-# plt.show()
-
-
+# Plotting log p vs log I 
+fig = plt.subplots(figsize =(10, 10))
+plt.hist2d(log_s,log_p,bins =[s_bins, p_bins])
+# label_temp = r'log(p) = C + $\alpha_I$log(I){linebreak} $\alpha_I$: {alpha_I:.4f} C: {C:.4f}'.format(alpha_I = PI_param[1],C = PI_param[0],linebreak='\n')
+# plt.plot(I_bins,PI_FitFunc,'r',linewidth=3,label = label_temp)
+plt.title("log p X log I 2D histogram")
+plt.ylabel('log p')
+plt.xlabel('log I')
+# plt.legend()
+plt.tight_layout()
+plt.show()
 
 # ################### 1st attempt at plotting  S vs P ###################################
 # # Pol = hdul[7].data
@@ -275,3 +296,23 @@ plt.show()
   
 # # # show plot
 # # plt.show()
+
+
+
+
+
+
+
+# # Launch APLpy figure of 2D cube
+# InputHDU = fits.open('scupollegacy_dr21_cube.fits')
+# img = aplpy.FITSFigure(InputHDU[0],convention='wells',slices=[0])
+# img.show_colorscale(vmin=0, vmax=0.02, cmap='gray') #, stretch='sqrt')
+
+
+# # Modify the tick labels for precision and format
+# img.axis_labels.set_font(size='xx-large')
+# img.tick_labels.set_font(size='xx-large')
+
+# #Revert to the default font size for the axis labels and for the ticks labels:
+# img.axis_labels.set_font(size=None)
+# img.tick_labels.set_font(size=None)
