@@ -299,6 +299,7 @@ def mapping_func(grid_xx,grid_yy,x,y,f_x_y,tol = 0.001):
     mappped_func = np.zeros((grid_xx.shape[0],grid_xx.shape[1]))
     for i in range(f_x_y.shape[0]):
         temp = (abs(grid_xx - x[i])<tol)*(abs(grid_yy - y[i])<tol)*f_x_y[i]
+
         mappped_func += temp*(mappped_func==0)
     return mappped_func
 
