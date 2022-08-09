@@ -1,13 +1,13 @@
-from os import sep
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
 # import aplpy
 import pandas as pd
 from astropy.io import fits
 from astropy.table import Table
 from astropy.coordinates import SkyCoord
 from scipy.optimize import curve_fit
-
+plt.rcParams.update({'font.size': 18})
 
 def generate_RA_DEC_mesh(hdr):
     """generate_RA_DEC_mesh
@@ -58,7 +58,6 @@ def wrapper(Angle_grid):
     return Angle_grid
 
 ########## importing and testing the file
-########## importing and testing the file
 FITS1 = '../FITS_file/CygX_E_OTFMAP.fits'
 hdul = fits.open(FITS1)
 # print(hdul.info())
@@ -94,53 +93,6 @@ BlankedMapStokesU.data[Selector] = np.nan
 DEC_grid,RA_grid = generate_RA_DEC_mesh(hdul[0])
 seperation = MapPolAngle.copy()
 
-# plt.figure()
-# ax1 = plt.subplot(121)
-# ax2 = plt.subplot(122)
-# ax2.imshow(BlankedMapStokesI.data)
-# ax1.imshow(MapStokesI.data)
-# plt.show()
-
-# ############## Testing the algorithm at point x_index,y_index
-
-# x_index = 50
-# y_index = 50
-
-# ############## making the filter for selecting points withing the ring
-# seperation.data = Calc_l(RA_grid[x_index,y_index],DEC_grid[x_index,y_index],RA_grid,DEC_grid)
-# seperation_selector = (seperation.data<0.5*0.5)
-# seperation.data[seperation_selector] = np.nan
-# seperation_selector = (seperation.data>1.5*0.5)
-# seperation.data[seperation_selector] = np.nan
-
-
-# ############## first version
-# AngleDiff = BlankedMapPolAngle.data - BlankedMapPolAngle.data[x_index,y_index]
-# Angle_selector =AngleDiff>90
-# AngleDiff[Angle_selector] = AngleDiff[Angle_selector] - 180
-# Angle_selector = AngleDiff<-90
-# AngleDiff[Angle_selector] = AngleDiff[Angle_selector] + 180
-# seperation_selector = (seperation.data >0)
-# S = np.nanmean(AngleDiff[seperation_selector]**2)**0.5
-# print(S)
-
-
-# ############ second version
-# tempa = BlankedMapStokesQ.data*BlankedMapStokesU.data[x_index,y_index] - BlankedMapStokesQ.data[x_index,y_index]*BlankedMapStokesU.data
-# tempb = BlankedMapStokesQ.data*BlankedMapStokesQ.data[x_index,y_index] + BlankedMapStokesU.data*BlankedMapStokesU.data[x_index,y_index]
-
-# AngleDiff_v2 = (180/np.pi)*0.5*np.arctan(tempa/tempb)
-# Angle_selector_v2 =AngleDiff_v2>90
-# AngleDiff_v2[Angle_selector_v2] = AngleDiff_v2[Angle_selector_v2] - 180
-# Angle_selector_v2 = AngleDiff_v2<-90
-# AngleDiff_v2[Angle_selector_v2] = AngleDiff_v2[Angle_selector_v2] + 180
-# S2 = np.nanmean(AngleDiff_v2[seperation_selector]**2)**0.5
-# print(S2)
-
-
-########## Running the algorithm on each cell
-
-
 set_delta = 0.5   # in arcminute
 S_map = BlankedMapPolAngle.copy()
 S_map_v2 = BlankedMapPolAngle.copy()
@@ -155,56 +107,131 @@ for i in range(RA_grid.shape[0]):
         seperation.data[seperation_selector] = np.nan
         seperation_selector = (seperation.data >0)
 
-        
-        ##### first version
-        # AngleDiff = BlankedMapPolAngle.data - BlankedMapPolAngle.data[i,j]
-        # AngleDiff = wrapper(AngleDiff)
-        # # Angle_selector =AngleDiff>90
-        # # AngleDiff[Angle_selector] = AngleDiff[Angle_selector] - 180
-        # # Angle_selector = AngleDiff<-90
-        # # AngleDiff[Angle_selector] = AngleDiff[Angle_selector] + 180
-        
-        # # ## once more to take care of > 180 degree angle difference
-        # # Angle_selector =AngleDiff>90
-        # # AngleDiff[Angle_selector] = AngleDiff[Angle_selector] - 180
-        # # Angle_selector = AngleDiff<-90
-        # # AngleDiff[Angle_selector] = AngleDiff[Angle_selector] + 180
-
-        # S = np.nanmean(AngleDiff[seperation_selector]**2)**0.5
-        # S_map.data[i,j] = S
-
-        
-        # ##### second version
+       
         tempa = BlankedMapStokesQ.data*BlankedMapStokesU.data[i,j] - BlankedMapStokesQ.data[i,j]*BlankedMapStokesU.data
         tempb = BlankedMapStokesQ.data*BlankedMapStokesQ.data[i,j] + BlankedMapStokesU.data*BlankedMapStokesU.data[i,j]
         AngleDiff_v2 = 0.5 * (180/np.pi)*np.arctan2(tempa,tempb)
-        #Angle_selector_v2 =AngleDiff_v2>90
-        #AngleDiff_v2[Angle_selector_v2] = AngleDiff_v2[Angle_selector_v2] - 180
-        #Angle_selector_v2 = AngleDiff_v2<-90
-        #AngleDiff_v2[Angle_selector_v2] = AngleDiff_v2[Angle_selector_v2] + 180
         S_v2 = np.nanmean(AngleDiff_v2[seperation_selector]**2)**0.5
         S_map_v2.data[i,j] = S_v2
 
-# S_map_v2.writeto('dispersion.fits')
-# BlankedMapStokesI.writeto('intensity.fits')
-# BlankedMapPol.writeto('polarization_frac.fits')
+plt.figure()
+plt.imshow(S_map_v2.data,origin='lower')
+plt.show()
 
-# DEC_array = DEC_grid.flatten()
-# RA_array = RA_grid.flatten()
-# StokesI_array = BlankedMapStokesI.data.flatten()
-# S_array = S_map_v2.data.flatten()
-# P_array = BlankedMapPol.data.flatten()
+def line_1(x, y):
+    top_x = 309.9258719
+    top_y = 42.4556451
+    bottom_x = 309.7452960
+    bottom_y =   42.4556451
+    slope = (top_y - bottom_y)/(top_x-bottom_x)
+    return (y-top_y) - slope*(x-top_x)
+
+def line_2(x, y):
+    top_x = 309.7452960
+    top_y = 42.4556451
+    bottom_x = 309.7504553
+    bottom_y =  42.4380577
+    slope = (top_y - bottom_y)/(top_x-bottom_x)
+    return (y-top_y) - slope*(x-top_x)
+
+def line_3(x, y):
+    top_x = 309.7504553
+    top_y = 42.4380577
+    bottom_x = 309.7366984
+    bottom_y =  42.4237862
+    slope = (top_y - bottom_y)/(top_x-bottom_x)
+    return (y-top_y) - slope*(x-top_x)
+
+def line_4(x, y):
+    top_x = 309.7366984
+    top_y = 42.4237862
+    bottom_x = 309.7086503
+    bottom_y =  42.3137186
+    slope = (top_y - bottom_y)/(top_x-bottom_x)
+    return (y-top_y) - slope*(x-top_x)
+
+
+
+I_ridge = BlankedMapStokesI.copy()
+p_ridge = BlankedMapPol.copy()
+s_ridge = S_map_v2.copy()
+
+
+I_fill = BlankedMapStokesI.copy()
+p_fill = BlankedMapPol.copy()
+s_fill = S_map_v2.copy()
+
+selector = ((line_1(RA_grid,DEC_grid)>0) + (line_4(RA_grid,DEC_grid)>0)) + (line_2(RA_grid,DEC_grid)<0)*(line_3(RA_grid,DEC_grid)>0)
+#  + (line_2(RA_grid,DEC_grid)<0)*(line_3(RA_grid,DEC_grid)>0))
+# selector = (line_1(RA_grid,DEC_grid)>0)*(line_2(RA_grid,DEC_grid)<0)*(line_3(RA_grid,DEC_grid)>0)
+I_ridge.data[selector] = np.nan
+p_ridge.data[selector] = np.nan
+s_ridge.data[selector] = np.nan
+
+selector = ~selector
+
+# selector = (line_1(RA_grid,DEC_grid)<0)*(line_2(RA_grid,DEC_grid)>0)*(line_3(RA_grid,DEC_grid)<0)
+I_fill.data[selector] = np.nan
+p_fill.data[selector] = np.nan
+s_fill.data[selector] = np.nan
+
+
+
+fig = plt.subplots(figsize =(30, 10))
+ax1 = plt.subplot(131)
+ax1.imshow(np.log(BlankedMapStokesI.data),origin='lower',vmin=0,vmax = 5)
+ax1.set_title('whole region intensity')
+ax2 = plt.subplot(132)
+ax2.imshow(np.log(I_ridge.data),origin = 'lower',vmin=0,vmax = 5)
+ax2.set_title('regions with intensity in the ridge region')
+ax3 = plt.subplot(133)
+ax3.imshow(np.log(I_fill.data),origin = 'lower',vmin=0,vmax = 5)
+ax3.set_title('regions with intensity in the fillament region')
+plt.show()
+
+# fig = plt.subplots(figsize =(30, 10))
+# ax1 = plt.subplot(131)
+# ax1.imshow(BlankedMapPol.data,origin='lower')
+# ax1.set_title('whole region Pfrac')
+# ax2 = plt.subplot(132)
+# ax2.imshow(p_ridge.data,origin = 'lower',vmin=0,vmax = 100)
+# ax2.set_title('Pfrac regions with intensity in the ridge region')
+# ax3 = plt.subplot(133)
+# ax3.imshow(p_fill.data,origin = 'lower',vmin=0,vmax = 100)
+# ax3.set_title('Pfrac regions with intensity in the fillament region')
+# plt.show()
+
+# fig = plt.subplots(figsize =(30, 10))
+# ax1 = plt.subplot(131)
+# ax1.imshow(S_map_v2.data,origin='lower',vmin=0,vmax = 90)
+# ax1.set_title('whole region angle dispersion')
+# ax2 = plt.subplot(132)
+# ax2.imshow(s_ridge.data,origin = 'lower',vmin=0,vmax = 90)
+# ax2.set_title('angle dispersion regions with intensity in the ridge region')
+# ax3 = plt.subplot(133)
+# ax3.imshow(s_fill.data,origin = 'lower')
+# ax3.set_title('angle dispersion regions with intensity in the fillament region')
+# plt.show()
 
 def lin_fit(x, a, b):
     return a + b*x
 
-s_array = S_map_v2.data.flatten()
-p_array = BlankedMapPol.data.flatten()
-I_array = BlankedMapStokesI.data.flatten()
+def S_seperator(x, y):
+    top_x = 309.7366984
+    top_y = 42.4237862
+    bottom_x = 309.7086503
+    bottom_y =  42.3137186
+    slope = (top_y - bottom_y)/(top_x-bottom_x)
+    return (y-top_y) - slope*(x-top_x)
 
-log_s = np.log(s_array)
-log_p = np.log(p_array)
-log_I = np.log(I_array)
+s_ridge_array = s_ridge.data.flatten()
+p_ridge_array = p_ridge.data.flatten()
+I_ridge_array = I_ridge.data.flatten()
+
+
+log_s = np.log(s_ridge_array)
+log_p = np.log(p_ridge_array)
+log_I = np.log(I_ridge_array)
 
 
 p_min = np.nanmin(log_p)
@@ -220,99 +247,104 @@ s_bins = np.arange(s_min, s_max, 0.075)
 I_bins = np.arange(I_min, I_max, 0.075)
 
 df_log = pd.DataFrame({'logp': log_p,'logs':log_s,'logI':log_I})
-# df = df.dropna()
 df_log = df_log.dropna()
 
-# PS_param, PS_param_cov = curve_fit(lin_fit, df_log['logs'], df_log['logp'])
-# PS_FitFunc = lin_fit(s_bins,PS_param[0],PS_param[1])
-# print(PS_param[0],PS_param[1])
+PS_upper_param, PS_upper_param_cov = curve_fit(lin_fit, df_log['logs'], df_log['logp'])
+PS_FitFunc_upper = lin_fit(s_bins,PS_upper_param[0],PS_upper_param[1])
+# print(PS_upper_param[0],PS_upper_param[1])
 
+PI_upper_param, PI_upper_param_cov = curve_fit(lin_fit, df_log['logI'], df_log['logp'])
+PI_FitFunc_upper = lin_fit(I_bins,PI_upper_param[0],PI_upper_param[1])
+# print(PI_upper_param[0],PI_upper_param[1])
 
-# # Plotting log p vs log s 
-# fig = plt.subplots(figsize =(15, 10))
-# plt.hist2d(log_s,log_p,bins =[s_bins, p_bins])
-# label_temp = r'log(p) = C + $\alpha_s$log(S){linebreak} $\alpha_s$: {alpha_s:.4f} C: {C:.04f}'.format(alpha_s = PS_param[1],C = PS_param[0],linebreak='\n')
-# plt.plot(s_bins,PS_FitFunc,'r',linewidth=3,label = label_temp)
-# plt.title("log p X log S 2D histogram")
-# plt.ylabel('log p ')
-# plt.xlabel('log S ')
-# plt.legend()
-# plt.tight_layout()
-# plt.show()
-
-PI_param, PI_param_cov = curve_fit(lin_fit, df_log['logI'], df_log['logp'])
-PI_FitFunc = lin_fit(I_bins,PI_param[0],PI_param[1])
-# print(PI_param[0],PI_param[1])
-
-# Plotting log p vs log I 
-fig = plt.subplots(figsize =(10, 10))
-plt.hist2d(log_s,log_p,bins =[s_bins, p_bins])
-# label_temp = r'log(p) = C + $\alpha_I$log(I){linebreak} $\alpha_I$: {alpha_I:.4f} C: {C:.4f}'.format(alpha_I = PI_param[1],C = PI_param[0],linebreak='\n')
-# plt.plot(I_bins,PI_FitFunc,'r',linewidth=3,label = label_temp)
-plt.title("log p X log I 2D histogram")
-plt.ylabel('log p')
-plt.xlabel('log I')
-# plt.legend()
+fig = plt.subplots(figsize =(30, 15))
+ax1 = plt.subplot(122)
+ax1.hist2d(log_s,log_p,bins =[s_bins, p_bins])
+label_temp = r'log(p) = C + $\alpha_s$log(S){linebreak} $\alpha_s$: {alpha_s:.4f} C: {C:.04f}'.format(alpha_s = PS_upper_param[1],C = PS_upper_param[0],linebreak='\n')
+plt.plot(s_bins,PS_FitFunc_upper,'r',linewidth=3,label = label_temp)
+ax1.set_title("log p X log S 2D histogram")
+ax1.set_ylabel('log p ')
+ax1.set_xlabel('log S ')
+ax2 = plt.subplot(121)
+ax2.hist2d(log_I,log_p,bins =[I_bins, p_bins])
+label_temp = r'log(p) = C + $\alpha_I$log(I){linebreak} $\alpha_I$: {alpha_I:.4f} C: {C:.4f}'.format(alpha_I = PI_upper_param[1],C = PI_upper_param[0],linebreak='\n')
+ax2.plot(I_bins,PI_FitFunc_upper,'r',linewidth=3,label = label_temp)
+ax2.set_title("log p X log I 2D histogram")
+ax2.set_ylabel('log p')
+ax2.set_xlabel('log I')
 plt.tight_layout()
+ax1.legend()
+ax2.legend()
 plt.show()
 
-# ################### 1st attempt at plotting  S vs P ###################################
-# # Pol = hdul[7].data
-# # s_map = s_map + Pol*(Pol == np.nan)
-# # Pol_mod = Pol*(Pol<20)
-# # plt.figure()
-# # ax1 = plt.subplot(121)
-# # ax1.set_title('Pol [%]')
-# # ax1.set_xlabel('RA')
-# # ax1.set_ylabel('DEC')
-# # ax1.imshow(Pol_mod,origin='lower')
-# # ax2 = plt.subplot(122)
-# # ax2.imshow(s_map,origin='lower')
-# # ax2.set_title('S [deg]')
-# # ax2.set_xlabel('RA')
-# # ax2.set_ylabel('DEC')
-# # plt.show()
+# def DoubleParamFunc(X, a, b, c):
+#     x,y = X
+#     return a + b*x + c*y
 
-# # s_map_array = s_map.flatten()
-# # Pol_array = Pol_mod.flatten()
-# # new_s_map_array = [x for x in s_map_array if np.isnan(x) == False]
-# # new_Pol_array = [x for x in Pol_array if np.isnan(x) == False]
+# p0 = -0.5539, -0.2614, 2.
+# PSI_param_upper, PSI_param_cov_upper = curve_fit(DoubleParamFunc,(df_log['logs'],df_log['logI']), df_log['logp'],p0)
+# print(PSI_param_upper)
 
-# # x_min = np.min(new_Pol_array)
-# # x_max = np.max(new_Pol_array)
+# def lin_fit(x, a, b):
+#     return a + b*x
+
+# s_fill_array = s_fill.data.flatten()
+# p_fill_array = p_fill.data.flatten()
+# I_fill_array = I_fill.data.flatten()
+
+
+# log_s = np.log(s_fill_array)
+# log_p = np.log(p_fill_array)
+# log_I = np.log(I_fill_array)
+
+
+# p_min = np.nanmin(log_p)
+# p_max = np.log(50)
+# s_min = np.nanmin(log_s)
+# s_max = np.nanmax(log_s)
+# I_min = np.nanmin(log_I)
+# I_max = np.nanmax(log_I)
   
-# # y_min = np.min(new_s_map_array)
-# # y_max = np.max(new_s_map_array)
-  
-# # x_bins = np.linspace(x_min, x_max, 50)
-# # y_bins = np.linspace(y_min, y_max, 50)
 
-# # fig = plt.subplots(figsize =(10, 10))
-# # # Creating plot
-# # plt.hist2d(new_Pol_array, new_s_map_array,bins =[x_bins, y_bins])
-# # plt.title("S X P 2D histogram")
-# # plt.ylabel('S [deg]')
-# # plt.xlabel('P [%]')
-  
-# # # show plot
-# # plt.show()
+# p_bins = np.arange(p_min, p_max, 0.075)
+# s_bins = np.arange(s_min, s_max, 0.075)
+# I_bins = np.arange(I_min, I_max, 0.075)
 
+# df_log = pd.DataFrame({'logp': log_p,'logs':log_s,'logI':log_I})
+# df_log = df_log.dropna()
 
+# PS_lower_param, PS_lower_param_cov = curve_fit(lin_fit, df_log['logs'], df_log['logp'])
+# PS_FitFunc_lower = lin_fit(s_bins,PS_lower_param[0],PS_lower_param[1])
+# # print(PS_lower_param[0],PS_lower_param[1])
 
+# PI_upper_param, PI_upper_param_cov = curve_fit(lin_fit, df_log['logI'], df_log['logp'])
+# PI_FitFunc_lower = lin_fit(I_bins,PI_upper_param[0],PI_upper_param[1])
+# # print(PI_upper_param[0],PI_upper_param[1])
 
+# fig = plt.subplots(figsize =(30, 15))
+# ax1 = plt.subplot(122)
+# ax1.hist2d(log_s,log_p,bins =[s_bins, p_bins])
+# label_temp = r'log(p) = C + $\alpha_s$log(S){linebreak} $\alpha_s$: {alpha_s:.4f} C: {C:.04f}'.format(alpha_s = PS_upper_param[1],C = PS_upper_param[0],linebreak='\n')
+# plt.plot(s_bins,PS_FitFunc_lower,'r',linewidth=3,label = label_temp)
+# ax1.set_title("log p X log S 2D histogram")
+# ax1.set_ylabel('log p ')
+# ax1.set_xlabel('log S ')
+# ax2 = plt.subplot(121)
+# ax2.hist2d(log_I,log_p,bins =[I_bins, p_bins])
+# label_temp = r'log(p) = C + $\alpha_I$log(I){linebreak} $\alpha_I$: {alpha_I:.4f} C: {C:.4f}'.format(alpha_I = PI_upper_param[1],C = PI_upper_param[0],linebreak='\n')
+# ax2.plot(I_bins,PI_FitFunc_lower,'r',linewidth=3,label = label_temp)
+# ax2.set_title("log p X log I 2D histogram")
+# ax2.set_ylabel('log p')
+# ax2.set_xlabel('log I')
+# plt.tight_layout()
+# ax1.legend()
+# ax2.legend()
+# plt.show()
 
+# def DoubleParamFunc(X, a, b, c):
+#     x,y = X
+#     return a + b*x + c*y
 
-
-# # Launch APLpy figure of 2D cube
-# InputHDU = fits.open('scupollegacy_dr21_cube.fits')
-# img = aplpy.FITSFigure(InputHDU[0],convention='wells',slices=[0])
-# img.show_colorscale(vmin=0, vmax=0.02, cmap='gray') #, stretch='sqrt')
-
-
-# # Modify the tick labels for precision and format
-# img.axis_labels.set_font(size='xx-large')
-# img.tick_labels.set_font(size='xx-large')
-
-# #Revert to the default font size for the axis labels and for the ticks labels:
-# img.axis_labels.set_font(size=None)
-# img.tick_labels.set_font(size=None)
+# p0 = -0.5539, -0.2614, 2.
+# PSI_param_lower, PSI_param_cov_lower = curve_fit(DoubleParamFunc,(df_log['logs'],df_log['logI']), df_log['logp'],p0)
+# print(PSI_param_lower)   
