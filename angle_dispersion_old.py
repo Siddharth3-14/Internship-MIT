@@ -1,7 +1,7 @@
 from os import sep
 import numpy as np
 import matplotlib.pyplot as plt
-# import aplpy
+import aplpy
 import pandas as pd
 from astropy.io import fits
 from astropy.table import Table
