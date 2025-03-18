@@ -11,6 +11,7 @@ from scipy.optimize import curve_fit
 from astropy.stats import bootstrap
 import matplotlib.ticker as ticker
 from scipy.stats import bootstrap as bootstrapscipy
+import math
 plt.rcParams.update({'font.size': 18})
 plt.rcParams['xtick.labelsize']=16
 plt.rcParams['ytick.labelsize']=16
@@ -80,6 +81,10 @@ def curve_fitting(x):
     param, param_cov = curve_fit(DoubleParamFunc,(x[:,2],x[:,1]),x[:,0])
     return param
 
+
+def lin_fit(x, a, b):
+    return a + b*x
+
 def remove_nan(array1,array2):
     selector = ~np.isnan(array1)
     array1_fil = array1[selector]
@@ -91,11 +96,69 @@ def remove_nan(array1,array2):
     return array1_fil,array2_fil
 
 
-def lin_fit(x, a, b):
-    return a + b*x
 
 
-def binning_equal_width(array1,array2,weights_array1,weights_array2,Nbins,color_bins='#FF7F0E',color_error='#8C564B'):
+##########
+def binning_equal_width(array1,array2,error_array1,error_array2,Nbins,color_bins='#06402B',color_error='#8C564B'):
+    log_filtered1 = np.log10(array1)
+    log_filtered2 = np.log10(array2)
+
+    bins = np.linspace(np.nanmin(log_filtered1),np.nanmax(log_filtered1),Nbins)
+
+
+    bin_centres = []
+    binned_data = []
+    error_bar = []
+
+    for i in range(0,(bins.shape[0]-1)):
+        temp_array1 = array1.copy()
+        temp_array2 = array2.copy()
+        temp_error1 = error_array1.copy()
+        temp_error2 = error_array2.copy()
+
+        Selector = log_filtered1 < bins[i]
+        temp_array1[Selector] = np.nan
+        temp_array2[Selector] = np.nan
+        temp_error1[Selector] = np.nan
+        temp_error2[Selector] =  np.nan
+
+        Selector =  log_filtered1 > bins[i+1]
+        temp_array1[Selector] = np.nan
+        temp_array2[Selector] = np.nan
+        temp_error1[Selector] = np.nan
+        temp_error2[Selector] =  np.nan
+
+        ma_array = np.ma.MaskedArray(temp_array1, mask=np.isnan(temp_array1))
+        ma_errors = np.ma.MaskedArray(temp_error1, mask=np.isnan(temp_error1))
+        average_temp = np.ma.average(ma_array, weights=ma_errors)
+        bin_centres.append(average_temp)
+
+        ma_array = np.ma.MaskedArray(temp_array2, mask=np.isnan(temp_array2))
+        ma_errors = np.ma.MaskedArray(temp_error2, mask=np.isnan(temp_error2))
+        average_temp = np.ma.average(ma_array, weights=ma_errors)
+        binned_data.append(average_temp)
+
+        error_bar.append(np.nanstd(temp_array2))
+        print(error_bar)
+    bin_centres = np.array(bin_centres)
+    binned_data = np.array(binned_data)
+    error_bar = np.array(error_bar)
+    
+    plt.errorbar(bin_centres,binned_data,yerr=error_bar,c=color_error)
+    plt.scatter(bin_centres,binned_data,s = 75,c=color_bins)
+    plt.plot(bin_centres,binned_data,c=color_bins)
+
+    bin_centres = np.log10(np.array(bin_centres))
+    binned_data = np.log10(np.array(binned_data))
+    valid = ~(np.isnan(bin_centres)|np.isnan(binned_data))
+
+    # bin_centres,binned_data = remove_nan(bin_centres,binned_data)
+    level_bins = np.linspace(np.amin(bin_centres),np.amax(bin_centres),11)
+    param, PS_param_cov = curve_fit(lin_fit, bin_centres[valid], binned_data[valid])
+    PS_FitFunc = lin_fit(level_bins,param[0],param[1])
+    return param,10**level_bins,10**PS_FitFunc
+
+def binning_equal_width_vbootstrap(array1,array2,weights_array1,weights_array2,Nbins=15):
     log_filtered1 = np.log10(array1)
     log_filtered2 = np.log10(array2)
 
@@ -132,6 +195,8 @@ def binning_equal_width(array1,array2,weights_array1,weights_array2,Nbins,color_
         ma_array = np.ma.MaskedArray(temp_array2, mask=np.isnan(temp_array2))
         ma_weights = np.ma.MaskedArray(temp_weights2, mask=np.isnan(temp_weights2))
         average_temp = np.ma.average(ma_array, weights=ma_weights)
+        # average_temp = np.ma.average(ma_array, weights=ma_weights)
+
         binned_data.append(average_temp)
 
         error_bar.append(np.nanstd(temp_array2))
@@ -139,21 +204,237 @@ def binning_equal_width(array1,array2,weights_array1,weights_array2,Nbins,color_
     bin_centres = np.array(bin_centres)
     binned_data = np.array(binned_data)
     error_bar = np.array(error_bar)
-    
-    plt.errorbar(bin_centres,binned_data,yerr=error_bar,c=color_error)
-    plt.scatter(bin_centres,binned_data,s = 75,c=color_bins)
-    plt.plot(bin_centres,binned_data,c=color_bins)
 
     bin_centres = np.log10(np.array(bin_centres))
     binned_data = np.log10(np.array(binned_data))
     valid = ~(np.isnan(bin_centres)|np.isnan(binned_data))
 
     # bin_centres,binned_data = remove_nan(bin_centres,binned_data)
-    level_bins = np.linspace(np.amin(bin_centres),np.amax(bin_centres),11)
     param, PS_param_cov = curve_fit(lin_fit, bin_centres[valid], binned_data[valid])
-    PS_FitFunc = lin_fit(level_bins,param[0],param[1])
-    return param,10**level_bins,10**PS_FitFunc
+    return param[1]
 
+
+
+
+
+###########
+
+
+def weightedmean(vals, valerrs, method = 'best', Niter = 200):
+    '''returns weighted mean and standard error on weighted mean
+        the method used to calculate the standard error on the mean differs:
+        ML: Not recommended! maximum likelihood method from http://ned.ipac.caltech.edu/level5/Leo/Stats4_5.html
+            this can severely underestimate the standard error on the mean
+        best: standard error by Cochran 1977 as used here: https://www.cs.tufts.edu/~nr/cs257/archive/donald-gatz/weighted-standard-error.pdf
+              fast, as accurate as bootstrap for most cases
+        bootstrap: standard deviation of distribution of weighted means produced by bootstrap resampling, 
+                    needs input Number of iterations to use Niter (prefer N > 200)
+                    slowest but most accurate
+    '''
+    #vals, valerrs = np.array(vals), np.array(valerrs)
+    weights = 1./valerrs**2
+    wmerr2 = 1./np.nansum(weights)
+    # weighted mean
+    wm = wmerr2*np.nansum(vals*weights)
+    
+    if method == 'ML':
+        wmerr = np.sqrt(wmerr2)
+        
+    elif method == 'best':
+        n = len(vals)
+        meanweight = np.nanmean(weights)
+        termA = np.sum( np.power(( weights*vals -  meanweight* wm ),2) )
+        termB = - 2*wm* np.nansum( (weights - meanweight) * (weights*vals - meanweight*wm))
+        termC = wm**2 * np.nansum( np.power((weights - meanweight),2) )
+        wmerr = np.sqrt( n/(n-1) * wmerr2**2 * (termA + termB + termC) )
+        
+    elif method == 'bootstrap':
+        xmeans = np.zeros(Niter)
+        sxm = np.zeros(Niter)
+        for ii in range(Niter):
+            # resample the measurements 
+            resample_inds = bootstrap_resample(vals)
+
+            # calculate weighted mean
+            a, b = vals[resample_inds],valerrs[resample_inds]
+            xmeans[ii],sxm[ii] = weightedmean(a,b)
+            
+        #standard deviation of xmeans distr (best estimate of the error on the mean by bootstrapping)
+        wmerr = np.std(xmeans)
+        
+    return wm, wmerr
+
+
+
+def get_wstd(vals, weights):
+	vals_n_weights = [(vals[i], weights[i]) for i in range(0, len(weights))]
+	def get_wmean(vals, weights):
+		weighted_vals = []
+		for tup in vals_n_weights:
+			weighted_vals.append(round(tup[0]*tup[1]/sum(weights), 3))    
+		answer = sum(weighted_vals)
+		return answer 
+
+	numerator = []
+	for i in range(0, len(weights)):
+		numerator.append(weights[i]*(vals[i]-get_wmean(vals, weights))**2)
+	var = sum(numerator)/(((len(weights)-1)*sum(weights))/len(weights))
+	wstdev = math.sqrt(var)
+	return wstdev
+
+
+
+# def binning_equal_width(array1,array2,error_array1,error_array2,Nbins,min_n = 1,color_bins='#06402B',color_error='#8C564B'):
+#     log_filtered1 = np.log10(array1)
+#     log_filtered2 = np.log10(array2)
+
+#     bins = np.linspace(np.nanmin(log_filtered1),np.nanmax(log_filtered1),Nbins)
+
+
+#     bin_centres = []
+#     binned_data = []
+#     error_bar = []
+
+#     for i in range(0,(bins.shape[0]-1)):
+#         temp_array1 = array1.copy()
+#         temp_array2 = array2.copy()
+#         temp_error1 = error_array1.copy()
+#         temp_error2 = error_array2.copy()
+        
+#         Selector = (log_filtered1 < bins[i])|(log_filtered1 > bins[i+1])
+#         temp_array1_fil = temp_array1[Selector]
+#         temp_array2_fil = temp_array2[Selector] 
+#         temp_error1_fil = temp_error1[Selector]
+#         temp_error2_fil = temp_error2[Selector] 
+
+#         valid = ~(np.isnan(temp_array1_fil)|np.isnan(temp_array2_fil)|np.isnan(temp_error1_fil)|np.isnan(temp_error2_fil))
+#         print(np.sum(valid))
+#         temp_array1_fil = temp_array1_fil[valid]
+#         temp_array2_fil = temp_array2_fil[valid]
+#         temp_error1_fil = temp_error1_fil[valid]
+#         temp_error2_fil = temp_error2_fil[valid]
+
+#         if np.sum(valid) == 0:
+#             bin_centres.append(np.nan)
+#             binned_data.append(np.nan)
+#             error_bar.append(np.nan)
+
+#         elif (np.sum(valid) < min_n):
+#             bin_centres.append(np.nan)
+#             binned_data.append(np.nan)
+#             error_bar.append(np.nan)
+
+#         elif (np.sum(valid)  ==  1):
+
+#             bin_centres.append(temp_array1_fil[0])
+#             binned_data.append(temp_array2_fil[0])
+#             error_bar.append(temp_error2_fil[0])
+
+#             # bin_centres.append(temp_array1_fil[0])
+#             # binned_data.append(temp_array2_fil[0])
+#             # error_bar.append(temp_weights2_fil[0])
+#         else:
+#             bin_centre_temp,_ = np.average(temp_array1_fil,1.0/temp_error1_fil**2)
+#             # bin_data_temp,_ = weightedmean(temp_array2_fil,temp_error2_fil)
+#             bin_data_temp,_ = np.average(temp_array2_fil,1.0/temp_error2_fil**2)
+#             # bin_data_temp,_ = weightedmean(temp_array2_fil,temp_weights2_fil)
+#             binned_error = get_wstd(temp_array2_fil,1.0/temp_error2_fil**2)
+            
+#             bin_centres.append(bin_centre_temp)
+#             binned_data.append(bin_data_temp)
+#             error_bar.append(binned_error)
+
+#     bin_centres = np.array(bin_centres)
+#     binned_data = np.array(binned_data)
+#     error_bar = np.array(error_bar)
+    
+#     plt.errorbar(bin_centres,binned_data,yerr=error_bar,c=color_error)
+#     plt.scatter(bin_centres,binned_data,s = 75,c=color_bins)
+#     plt.plot(bin_centres,binned_data,c=color_bins)
+
+#     bin_centres = np.log10(np.array(bin_centres))
+#     binned_data = np.log10(np.array(binned_data))
+#     valid = ~(np.isnan(bin_centres)|np.isnan(binned_data))
+
+#     # bin_centres,binned_data = remove_nan(bin_centres,binned_data)
+#     level_bins = np.linspace(np.nanmin(bin_centres),np.nanmax(bin_centres),11)
+#     param, PS_param_cov = curve_fit(lin_fit, bin_centres[valid], binned_data[valid])
+#     PS_FitFunc = lin_fit(level_bins,param[0],param[1])
+#     return param,10**level_bins,10**PS_FitFunc
+
+
+
+
+# def binning_equal_width_vbootstrap(array1,array2,weights_array1,weights_array2,Nbins=15):
+#     log_filtered1 = np.log10(array1)
+#     log_filtered2 = np.log10(array2)
+
+#     bins = np.linspace(np.nanmin(log_filtered1),np.nanmax(log_filtered1),Nbins)
+
+
+#     bin_centres = []
+#     binned_data = []
+#     error_bar = []
+
+#     for i in range(0,(bins.shape[0]-1)):
+#         temp_array1 = array1.copy()
+#         temp_array2 = array2.copy()
+#         temp_error1 = error_array1.copy()
+#         temp_error2 = error_array2.copy()
+        
+#         Selector = (log_filtered1 < bins[i])|(log_filtered1 > bins[i+1])
+#         temp_array1_fil = temp_array1[Selector]
+#         temp_array2_fil = temp_array2[Selector] 
+#         temp_error1_fil = temp_error1[Selector]
+#         temp_error2_fil = temp_error2[Selector] 
+
+#         valid = ~(np.isnan(temp_array1_fil)|np.isnan(temp_array2_fil)|np.isnan(temp_error1_fil)|np.isnan(temp_error2_fil))
+#         print(np.sum(valid))
+#         temp_array1_fil = temp_array1_fil[valid]
+#         temp_array2_fil = temp_array2_fil[valid]
+#         temp_error1_fil = temp_error1_fil[valid]
+#         temp_error2_fil = temp_error2_fil[valid]
+
+#         if np.sum(valid) == 0:
+#             bin_centres.append(np.nan)
+#             binned_data.append(np.nan)
+#             error_bar.append(np.nan)
+
+#         elif (np.sum(valid) < min_n):
+#             bin_centres.append(np.nan)
+#             binned_data.append(np.nan)
+#             error_bar.append(np.nan)
+
+#         elif (np.sum(valid)  ==  1):
+
+#             bin_centres.append(temp_array1_fil[0])
+#             binned_data.append(temp_array2_fil[0])
+#             error_bar.append(temp_error2_fil[0])
+
+#         else:
+#             bin_centre_temp,_ = np.average(temp_array1_fil,1.0/temp_error1_fil**2)
+#             bin_data_temp,_ = np.average(temp_array2_fil,1.0/temp_error2_fil**2)
+#             binned_error = get_wstd(temp_array2_fil,1.0/temp_error2_fil**2)
+            
+#             bin_centres.append(bin_centre_temp)
+#             binned_data.append(bin_data_temp)
+#             error_bar.append(binned_error)
+
+#     bin_centres = np.array(bin_centres)
+#     binned_data = np.array(binned_data)
+#     error_bar = np.array(error_bar)
+
+#     bin_centres = np.log10(np.array(bin_centres))
+#     binned_data = np.log10(np.array(binned_data))
+#     valid = ~(np.isnan(bin_centres)|np.isnan(binned_data))
+
+#     # bin_centres,binned_data = remove_nan(bin_centres,binned_data)
+#     param, PS_param_cov = curve_fit(lin_fit, bin_centres[valid], binned_data[valid])
+#     return param[1]
+
+
+
+############# 2D binning
 def binning_equal_width_2D(array1,array2,array3,weights_array1,weights_array2,weights_array3,Nbins1,Nbins2):
     log_filtered1 = np.log10(array1)
     log_filtered2 = np.log10(array2)
@@ -270,60 +551,6 @@ def binning_equal_width_2D(array1,array2,array3,weights_array1,weights_array2,we
     plt.show()
     return param,param_cov
 
-def binning_equal_width_vbootstrap(array1,array2,weights_array1,weights_array2,Nbins=15):
-    log_filtered1 = np.log10(array1)
-    log_filtered2 = np.log10(array2)
-
-    bins = np.linspace(np.nanmin(log_filtered1),np.nanmax(log_filtered1),Nbins)
-
-
-    bin_centres = []
-    binned_data = []
-    error_bar = []
-
-    for i in range(0,(bins.shape[0]-1)):
-        temp_array1 = array1.copy()
-        temp_array2 = array2.copy()
-        temp_weights1 = weights_array1.copy()
-        temp_weights2 = weights_array2.copy()
-
-        Selector = log_filtered1 < bins[i]
-        temp_array1[Selector] = np.nan
-        temp_array2[Selector] = np.nan
-        temp_weights1[Selector] = np.nan
-        temp_weights2[Selector] =  np.nan
-
-        Selector =  log_filtered1 > bins[i+1]
-        temp_array1[Selector] = np.nan
-        temp_array2[Selector] = np.nan
-        temp_weights1[Selector] = np.nan
-        temp_weights2[Selector] =  np.nan
-
-        ma_array = np.ma.MaskedArray(temp_array1, mask=np.isnan(temp_array1))
-        ma_weights = np.ma.MaskedArray(temp_weights1, mask=np.isnan(temp_weights1))
-        average_temp = np.ma.average(ma_array, weights=ma_weights)
-        bin_centres.append(average_temp)
-
-        ma_array = np.ma.MaskedArray(temp_array2, mask=np.isnan(temp_array2))
-        ma_weights = np.ma.MaskedArray(temp_weights2, mask=np.isnan(temp_weights2))
-        average_temp = np.ma.average(ma_array, weights=ma_weights)
-        # average_temp = np.ma.average(ma_array, weights=ma_weights)
-
-        binned_data.append(average_temp)
-
-        error_bar.append(np.nanstd(temp_array2))
-
-    bin_centres = np.array(bin_centres)
-    binned_data = np.array(binned_data)
-    error_bar = np.array(error_bar)
-
-    bin_centres = np.log10(np.array(bin_centres))
-    binned_data = np.log10(np.array(binned_data))
-    valid = ~(np.isnan(bin_centres)|np.isnan(binned_data))
-
-    # bin_centres,binned_data = remove_nan(bin_centres,binned_data)
-    param, PS_param_cov = curve_fit(lin_fit, bin_centres[valid], binned_data[valid])
-    return param[1]
 
 def binning_equal_width_2D_vbootstrap(array1,array2,array3,weights_array1,weights_array2,weights_array3,Nbins1=15,Nbins2=15):
     log_filtered1 = np.log10(array1)
@@ -423,17 +650,6 @@ def binning_equal_width_2D_vbootstrap(array1,array2,array3,weights_array1,weight
 
     return param[1]
 
-# valid = ~(np.isnan(s_array)|np.isnan(I_array)|np.isnan(p_array)|np.isnan(es_array)|np.isnan(eI_array)|np.isnan(ep_array))
-# data = (s_array[valid],I_array[valid],p_array[valid],es_array[valid],eI_array[valid],ep_array[valid])
-# res = bootstrapscipy(data,binning_equal_width_2D_vbootstrap,n_resamples=1,batch = 5,paired = True,vectorized=False, random_state=0)
-# print(res.confidence_interval)
-# print(res.standard_error)
-# fig, ax = plt.subplots()
-# ax.hist(res.bootstrap_distribution, bins=25)
-# ax.set_title('Bootstrap Distribution')
-# ax.set_xlabel('statistic value')
-# ax.set_ylabel('frequency')
-# plt.show()
 
 # def binning_datav1(array1,array2,delt_bin):
 #     levels = np.linspace(np.nanmin(array1),np.nanmax(array1),delt_bin)

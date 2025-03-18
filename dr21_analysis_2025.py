@@ -17,137 +17,176 @@ plt.rcParams.update({'font.size': 18})
 plt.rcParams['xtick.labelsize']=16
 plt.rcParams['ytick.labelsize']=16
 import Functions
+import math
+
 # %matplotlib inline
-
 #%%
-########## importing and testing the file
-FITS1 = '../FITS_file/new_fits/DR21_OTF_full_pipeline.fits'
-FITS2 = '../FITS_file/new_fits/DR21_full_NH2_Repr.fits'
-FITS3 = '../FITS_file/new_fits/DR21_full_Tdust_Repr.fits'
-FITS4 = '../FITS_file/new_fits/DR21_full_IRAC4_Repr.fits'
-FITS5 = '../FITS_file/new_fits/DR21_full_Her250_Repr.fits'
-FITS6 = '../FITS_file/new_fits/DR21_full_Fil_Mask.fits'
+FITS1 = '../2025/STOKES I.fits'
+FITS2 = '../2025/ERROR I.fits'
+FITS3 = '../2025/DEBIASED PERCENT POL.fits'
+FITS4 = '../2025/ERROR PERCENT POL.fits'
+FITS5 = '../2025/ROTATED POL ANGLE.fits'
+FITS6 = '../2025/ERROR POL ANGLE.fits'
+FITS7 = '../2025/DR21_full_NH2_Repr.fits'
+FITS8 = '../2025/DR21_full_Tdust_Repr.fits'
+FITS9 = '../2025/DR21_full_IRAC4_Repr.fits'
+FITS10 = '../2025/DR21_full_Fil_Mask.fits'
+FITS11 = '../2025/DR21_full_Fil_OF_Mask.fits'
+FITS12 = '../2025/STOKES Q.fits'
+FITS13 = '../2025/STOKES U.fits'
 
-hdul = fits.open(FITS1)
+
+
+hdul1 = fits.open(FITS1)
 hdul2 = fits.open(FITS2)
-hdul3 = fits.open(FITS3)
+hdul3= fits.open(FITS3)
 hdul4 = fits.open(FITS4)
 hdul5 = fits.open(FITS5)
 hdul6 = fits.open(FITS6)
+hdul7 = fits.open(FITS7)
+hdul8 = fits.open(FITS8)
+hdul9 = fits.open(FITS9)
+hdul10 = fits.open(FITS10)
+hdul11 = fits.open(FITS11)
+hdul12 =fits.open(FITS12)
+hdul13 =fits.open(FITS13)
 
-# print(hdul.info())
 
-MapStokesI = hdul[0]
-MapStokesIError = hdul[1]
-MapStokesQ = hdul[2]
-MapStokesU = hdul[4]
-MapDebPol = hdul[8]
-MapDebPolError = hdul[9]
-MapPolAngleNonRotated = hdul[10]
-MapPolAngle = hdul[11]
-MapPolAngleError = hdul[12]
-MapPolFlux = hdul[13]
-MapPolFluxError = hdul[14]
-MapColumndensity = hdul2[0]
-MapTemperature = hdul3[0]
-Map8Micron = hdul4[0]
-MapHer250 = hdul5[0]
-Mask = hdul6[0]
+
+
+
+
+# print(hdul1.info())
+# print(hdul2.info())
+# print(hdul3.info())
+# print(hdul4.info())
+# print(hdul5.info())
+# print(hdul6.info())
+# print(hdul7.info())
+# print(hdul8.info())
+# print(hdul9.info())
+# print(hdul10.info())
+# print(hdul11.info())
+# print(hdul12.info())
+# print(hdul13.info())
+
+
+
+MapStokesI_2025 = hdul1[0]
+MapStokesIError_2025 = hdul2[1]
+MapDebPol_2025 = hdul3[1]
+MapDebPolError_2025 = hdul4[1]
+MapPolAngle_2025 = hdul5[1]
+MapPolAngleError_2025 = hdul6[1]
+MapColumndensity_2025 = hdul7[0]
+MapTemperature_2025 = hdul8[0]
+Map8Micron_2025 = hdul9[0]
+Mask_2025 = hdul10[0]
+MaskOF_2025 = hdul11[0]
+MapStokesQ_2025 = hdul12[1]
+MapStokesU_2025 = hdul13[1]
+
+
 
 # plt.figure(figsize=(6,8))
 # # plt.imshow(CheckMapTemperature.data,origin='lower')
-# plt.imshow(MapPolAngle.data ,origin='lower')
+# plt.imshow(MapPolAngle_2025.data ,origin='lower')
 # plt.tight_layout()
 # plt.show()
 
 
 
 
-MapPolSNR = MapDebPol.copy()
-BlankedMapPol = MapDebPol.copy()
-BlankedMapPolAngle = MapPolAngle.copy()
-BlankedMapPolAngleError = MapPolAngleError.copy()
-BlankedMapPolAngleNonRotated = MapPolAngleNonRotated.copy() 
-BlankedMapStokesI = MapStokesI.copy()
-BlankedMapStokesIError = MapStokesIError.copy()
-BlankedMapStokesQ = MapStokesQ.copy()
-BlankedMapStokesU = MapStokesU.copy()
-BlankedMapColumnDensity = MapColumndensity.copy()
-BlankedMapTemperature = MapTemperature.copy()
-BlankedMap8Mircon = Map8Micron.copy()
-BlankedMapHer250 = MapHer250.copy()
-BlankedMapDebPolError = MapDebPolError.copy()
+
+MapPolSNR_2025 = MapDebPol_2025.copy()
+BlankedMapPol_2025 = MapDebPol_2025.copy()
+BlankedMapDebPolError_2025 = MapDebPolError_2025.copy()
+BlankedMapPolAngle_2025 = MapPolAngle_2025.copy()
+BlankedMapPolAngleError_2025 = MapPolAngleError_2025.copy()
+BlankedMapStokesI_2025 = MapStokesI_2025.copy()
+BlankedMapStokesIError_2025 = MapStokesIError_2025.copy()
+BlankedMapStokesQ_2025 = MapStokesQ_2025.copy()
+BlankedMapStokesU_2025 = MapStokesU_2025.copy()
+BlankedMapColumnDensity_2025 = MapColumndensity_2025.copy()
+BlankedMapTemperature_2025 = MapTemperature_2025.copy()
+BlankedMap8Mircon_2025 = Map8Micron_2025.copy()
 
 
-######## taking points only with singal to noise ratio more than 3
-MapPolSNR.data[:] = np.nan
-MapPolSNR.data = MapDebPol.data/MapDebPolError.data
+MapPolSNR_2025.data[:] = np.nan
+MapPolSNR_2025.data = MapDebPol_2025.data/MapDebPolError_2025.data
 
 
-Selector = (MapPolSNR.data < 3)
-BlankedMapPol.data[Selector] = np.nan
-BlankedMapPolAngle.data[Selector] = np.nan
-BlankedMapPolAngleError.data[Selector] = np.nan
-BlankedMapStokesI.data[Selector] = np.nan
-BlankedMapStokesIError.data[Selector] = np.nan
-BlankedMapStokesQ.data[Selector] = np.nan
-BlankedMapStokesU.data[Selector] = np.nan
-BlankedMapPolAngleNonRotated.data[Selector] = np.nan
-BlankedMapColumnDensity.data[Selector] = np.nan
-BlankedMapTemperature.data[Selector] = np.nan
-BlankedMap8Mircon.data[Selector] = np.nan
-BlankedMapHer250.data[Selector] = np.nan
-BlankedMapDebPolError.data[Selector] = np.nan
+Selector = (MapPolSNR_2025.data < 3)
+# BlankedMapStokesI_2025.data[Selector] = np.nan
+# BlankedMapStokesIError_2025.data[Selector] = np.nan
+# BlankedMapDebPol_2025.data[Selector] = np.nan
+# BlankedMapDebPolError_2025.data[Selector] = np.nan
+# BlankedMapPolAngle_2025.data[Selector] = np.nan
+# BlankedMapPolAngleError_2025.data[Selector] = np.nan
+BlankedMapPol_2025.data[Selector] = np.nan
+BlankedMapDebPolError_2025.data[Selector] = np.nan
+BlankedMapPolAngle_2025.data[Selector] = np.nan
+BlankedMapPolAngleError_2025.data[Selector] = np.nan
+BlankedMapStokesI_2025.data[Selector] = np.nan
+BlankedMapStokesIError_2025.data[Selector] = np.nan
+BlankedMapStokesQ_2025.data[Selector] = np.nan
+BlankedMapStokesU_2025.data[Selector] = np.nan
+BlankedMapColumnDensity_2025.data[Selector] = np.nan
+BlankedMapTemperature_2025.data[Selector] = np.nan
+BlankedMap8Mircon_2025.data[Selector] = np.nan
+
 
 ############## removing any points with pfrac above 50
-Selector = (BlankedMapPol.data>50)
-BlankedMapPol.data[Selector] = np.nan
-BlankedMapPolAngle.data[Selector] = np.nan
-BlankedMapPolAngleError.data[Selector] = np.nan
-BlankedMapStokesI.data[Selector] = np.nan
-BlankedMapStokesIError.data[Selector] = np.nan
-BlankedMapStokesQ.data[Selector] = np.nan
-BlankedMapStokesU.data[Selector] = np.nan
-BlankedMapPolAngleNonRotated.data[Selector] = np.nan
-BlankedMapColumnDensity.data[Selector] = np.nan
-BlankedMapTemperature.data[Selector] = np.nan
-BlankedMap8Mircon.data[Selector] = np.nan
-BlankedMapHer250.data[Selector] = np.nan
-BlankedMapDebPolError.data[Selector] = np.nan
+Selector = (BlankedMapPol_2025.data>50)
+BlankedMapPol_2025.data[Selector] = np.nan
+BlankedMapDebPolError_2025.data[Selector] = np.nan
+BlankedMapPolAngle_2025.data[Selector] = np.nan
+BlankedMapPolAngleError_2025.data[Selector] = np.nan
+BlankedMapStokesI_2025.data[Selector] = np.nan
+BlankedMapStokesIError_2025.data[Selector] = np.nan
+BlankedMapStokesQ_2025.data[Selector] = np.nan
+BlankedMapStokesU_2025.data[Selector] = np.nan
+BlankedMapColumnDensity_2025.data[Selector] = np.nan
+BlankedMapTemperature_2025.data[Selector] = np.nan
+BlankedMap8Mircon_2025.data[Selector] = np.nan
+
 
 
 ############ removing any data points with I/I_error < 100
-Selector = MapStokesI.data/MapStokesIError.data < 100
-BlankedMapPol.data[Selector] = np.nan
-BlankedMapPolAngle.data[Selector] = np.nan
-BlankedMapPolAngleError.data[Selector] = np.nan
-BlankedMapStokesI.data[Selector] = np.nan
-BlankedMapStokesIError.data[Selector] = np.nan
-BlankedMapStokesQ.data[Selector] = np.nan
-BlankedMapStokesU.data[Selector] = np.nan
-BlankedMapPolAngleNonRotated.data[Selector] = np.nan
-BlankedMapColumnDensity.data[Selector] = np.nan
-BlankedMapTemperature.data[Selector] = np.nan
-BlankedMap8Mircon.data[Selector] = np.nan
-BlankedMapHer250.data[Selector] = np.nan
-BlankedMapDebPolError.data[Selector] = np.nan
-
-# plt.figure(figsize=(6,6))
-# plt.imshow(np.log10(MapHer250.data),origin='lower',vmin = 0 , vmax = 3)
-
-# Selector = BlankedMap8Mircon.data < 80
-# BlankedMap8Mircon.data[Selector] = np.nan
+Selector = MapStokesI_2025.data/MapStokesIError_2025.data < 100
+BlankedMapPol_2025.data[Selector] = np.nan
+BlankedMapDebPolError_2025.data[Selector] = np.nan
+BlankedMapPolAngle_2025.data[Selector] = np.nan
+BlankedMapPolAngleError_2025.data[Selector] = np.nan
+BlankedMapStokesI_2025.data[Selector] = np.nan
+BlankedMapStokesIError_2025.data[Selector] = np.nan
+BlankedMapStokesQ_2025.data[Selector] = np.nan
+BlankedMapStokesU_2025.data[Selector] = np.nan
+BlankedMapColumnDensity_2025.data[Selector] = np.nan
+BlankedMapTemperature_2025.data[Selector] = np.nan
+BlankedMap8Mircon_2025.data[Selector] = np.nan
 
 
-# BlankedMapColumnDensity.data = BlankedMapColumnDensity.data*(BlankedMapStokesI.data/BlankedMapStokesI.data)
-# BlankedMapTemperature.data = BlankedMapTemperature.data*(BlankedMapStokesI.data/BlankedMapStokesI.data)
-# BlankedMap8Mircon.data = BlankedMap8Mircon.data*(BlankedMapStokesI.data/BlankedMapStokesI.data)
-# BlankedMapPolAngleError.data = BlankedMapPolAngleError.data*(BlankedMapStokesI.data/BlankedMapStokesI.data)
-# BlankedMapHer250.data = BlankedMapHer250.data*(BlankedMapStokesI.data/BlankedMapStokesI.data)
+# plt.figure(figsize=(6,8))
+# # plt.imshow(CheckMapTemperature.data,origin='lower')
+# plt.imshow(MapStokesI_2025.data ,origin='lower')
+# plt.tight_layout()
+# plt.show()
 
-############## generating the RA and DEC mesh
-DEC_grid,RA_grid = Functions.generate_RA_DEC_mesh(hdul[0])
-seperation = MapPolAngle.copy()
+
+
+# plt.figure(figsize=(6,8))
+# # plt.imshow(CheckMapTemperature.data,origin='lower')
+# plt.imshow(BlankedMapStokesI_2025.data ,origin='lower')
+# plt.tight_layout()
+# plt.show()
+
+
+DEC_grid,RA_grid = Functions.generate_RA_DEC_mesh(BlankedMapStokesI_2025)
+seperation = MapPolAngle_2025.copy()
+
+# print(RA_grid2025.shape)
+# print(DEC_grid2025.shape)
 
 # CheckMapTemperature = BlankedMapTemperature.copy()
 # selector = BlankedMapTemperature.data>40
@@ -156,74 +195,124 @@ seperation = MapPolAngle.copy()
 # selector = BlankedMapTemperature.data<30
 # CheckMapTemperature.data[selector] = 5
 
+# print(1)
+# plt.figure(figsize=(6,8))
+# # plt.imshow(CheckMapTemperature.data,origin='lower')
+# plt.imshow(BlankedMapColumnDensity_2025.data ,origin='lower',vmin=80)
+# plt.tight_layout()
+# plt.show()
+
+
 plt.figure(figsize=(6,8))
 # plt.imshow(CheckMapTemperature.data,origin='lower')
-im = plt.imshow(BlankedMapPol.data ,origin='lower')
+im = plt.imshow(BlankedMapPol_2025.data ,origin='lower')
 plt.colorbar(im)
-plt.title("Debiased P%")
+plt.title("Debiased P% 2025")
 # plt.tight_layout()
 plt.show()
 
 
-
 plt.figure(figsize=(6,8))
 # plt.imshow(CheckMapTemperature.data,origin='lower')
-im = plt.imshow(BlankedMapStokesI.data ,origin='lower')
+im = plt.imshow(BlankedMapStokesI_2025.data ,origin='lower')
 plt.colorbar(im)
-plt.title("Stokes I")
+plt.title("Stokes I 2025")
 # plt.tight_layout()
 plt.show()
 
+
 plt.figure(figsize=(6,8))
 # plt.imshow(CheckMapTemperature.data,origin='lower')
-im =plt.imshow(BlankedMapStokesQ.data ,origin='lower',cmap = 'RdBu')
+im = plt.imshow(BlankedMapStokesQ_2025.data ,origin='lower',cmap = 'RdBu')
 plt.colorbar(im)
-plt.title("Stokes Q")
+plt.title("Stokes Q 2025")
 plt.tight_layout()
 plt.show()
 
 plt.figure(figsize=(6,8))
 # plt.imshow(CheckMapTemperature.data,origin='lower')
-im =plt.imshow(BlankedMapStokesU.data ,origin='lower',cmap = 'RdBu')
+im = plt.imshow(BlankedMapStokesU_2025.data ,origin='lower',cmap = 'RdBu')
 plt.colorbar(im)
-plt.title("Stokes U")
+plt.title("Stokes U 2025")
 plt.tight_layout()
 plt.show()
 
 plt.figure()
-plt.hist(BlankedMapStokesQ.data.flatten(),50)
-plt.title('Distribution of Stokes Q')
+plt.hist(BlankedMapStokesQ_2025.data.flatten(),50)
+plt.title('Distribution of Stokes Q 2025')
 plt.xlabel('Stokes Q')
 plt.ylabel('Number of data points')
 plt.show()
 
 plt.figure()
-plt.hist(BlankedMapStokesU.data.flatten(),50)
-plt.title('Distribution of Stokes U')
+plt.hist(BlankedMapStokesU_2025.data.flatten(),50)
+plt.title('Distribution of Stokes U 2025')
 plt.xlabel('Stokes U')
 plt.ylabel('Number of data points')
 plt.show()
 
 #%%
+dense_cores = pd.read_csv('../data/dense_cores - Copy.tsv',delimiter='\t',header=None)
+ra = np.array(dense_cores[7])
+dec = np.array(dense_cores[8])
+FWHMa = np.array(dense_cores[2])
+FWHMb = np.array(dense_cores[3])
+#DR21 clump N46
+#DR21OH clump N44
+#DR21OH-W clump N38
+#DR21OH-S clump N47
 
-def get_data(infile):
+
+
+angle_FWHMa = np.degrees(np.arctan(3*FWHMa/(2*1700)))
+angle_FWHMb = (FWHMb/1700)
+print(angle_FWHMa)
+plt.hist(angle_FWHMa,50)
+
+def Calc_l(ra1,dec1,ra2,dec2):
+
+    c1 = SkyCoord(ra1,dec1,unit = 'deg')
+    c2 = SkyCoord(ra2,dec2,unit = 'deg')
+    sep = c1.separation(c2)
+    return sep.deg
+
+mask_core = np.zeros_like(RA_grid)
+for i in range(ra.shape[0]):
+	seperation = Calc_l(ra[i],dec[i],RA_grid,DEC_grid)
+	mask_core[seperation<angle_FWHMa[i]] = 1
+	mask_core = mask_core.astype(bool)
+
+
+
+plt.figure()
+plt.imshow(mask_core,origin='lower')
+plt.colorbar()
+plt.show()
+	
+#%%
+
+def get_data(infile1,infile2,infile3,infile4,infile5):
 	#get data
-	hawc = fits.open(infile)
-	p    = hawc[8]
-	perr = hawc[9]
+	hawc1 = fits.open(infile1)
+	hawc2 = fits.open(infile2)
+	hawc3 = fits.open(infile3)
+	hawc4 = fits.open(infile4)
+	hawc5 = fits.open(infile5)
+	p    = hawc1[1]
+	perr = hawc2[1]
 	#pa   = hawc['ROTATED POL ANGLE']
-	pa   = hawc[11]
-	stkI = hawc[0]
-	stkIerr = hawc[1]
-	pi   = hawc[15]
-	pierr   = hawc[14]
+	pa   = hawc3[1]
+	stkI = hawc4[0]
+	stkIerr = hawc5[1]
+	# pi   = hawc[15]
+	# pierr   = hawc[14]
 
 	#Jy/px to Jy/sqarcsec
 	pxscale = stkI.header['CDELT2']*3600
 	stkI.data /= pxscale**2
-	pi.data /= pxscale**2 
+	# pi.data /= pxscale**2 
 	stkIerr.data /= pxscale**2
-	return p,perr,pa,stkI,stkIerr,pi,pierr,pxscale
+	return p,perr,pa,stkI,stkIerr,pxscale
 
 def quality_cuts(stkI,stkIerr,p,perr,SNRp_cut,p_cut,SNRi_cut):
 	#snr in P
@@ -240,24 +329,38 @@ def quality_cuts(stkI,stkIerr,p,perr,SNRp_cut,p_cut,SNRi_cut):
 	return p
 
 
-filename1='../FITS_file/new_fits/DR21_OTF_full_pipeline.fits'
-filename2= '../FITS_file/new_fits/DR21_full_log_NH2_Repr.fits'
+# filename1='../2025/STOKES I.fits'
+# filename2='../2025/DEBIASED PERCENT POL.fits'
+# filename3='../2025/ROTATED POL ANGLE.fits'
+# filename4='../2025/STOKES I.fits'
 
-hawcp = fits.open(filename1)
-Herschel = fits.open(filename2)
+
+
+# hawcp1 = fits.open(filename1)
+# hawcp2 = fits.open(filename2)
+# hawcp3 = fits.open(filename3)
+# hawcp4 = fits.open(filename4)
+
+# Herschel = fits.open(filename5)
+# MapHer250 = Herschel[0]
+
+# # x = hawcp['STOKES I'].data
+# # y = hawcp['DEBIASED PERCENT POL'].data
+# # y1=hawcp['ROTATED POL ANGLE'].data
+# # y2 = hawcp['DEBIASED POL FLUX'].data
+
+
+filename= '../2025/DR21_full_NH2_Repr.fits'
+Herschel = fits.open(filename)
 MapHer250 = Herschel[0]
 
-x = hawcp['STOKES I'].data
-y = hawcp['DEBIASED PERCENT POL'].data
-y1=hawcp['ROTATED POL ANGLE'].data
-y2 = hawcp['DEBIASED POL FLUX'].data
-
-
-
-Herschel = fits.open(filename2)
-MapHer250 = Herschel[0]
-
+MapHer250log = MapHer250.copy()
+MapHer250log.data = np.log10(MapHer250.data)
 title = 'SIMPLIFI'
+
+# plt.figure()
+# plt.hist(MapHer250log.data)
+# plt.show()
 
 SNRp_cut = 3.0
 p_cut = 50
@@ -274,25 +377,43 @@ SNRi_cut = 100
 scalevec = 1.5 #1px = scalevec * 1% pol 
 vec_legend = 5.0
 
-
-p,perr,pa,stkI,stkIerr,pi,pierr,pxscale = get_data(filename1)
+filename1 = '../2025/DEBIASED PERCENT POL.fits'
+filename2 = '../2025/ERROR PERCENT POL.fits'
+filename3 = '../2025/ROTATED POL ANGLE.fits'
+filename4 = '../2025/STOKES I.fits'
+filename5 = '../2025/ERROR I.fits'
+p,perr,pa,stkI,stkIerr,pxscale = get_data(filename1,filename2,filename3,filename4,filename5)
 p = quality_cuts(stkI,stkIerr,p,perr,SNRp_cut,p_cut,SNRi_cut)
 
-RA = (stkI.header['OBSRA']*u.hourangle).to(u.deg)
-DEC = stkI.header['OBSDEC']*u.deg
+# RA = (stkI.header['OBSRA']*u.hourangle).to(u.deg)
+# DEC = stkI.header['OBSDEC']*u.deg
 
 
 #### SCRIPT
 fig = plt.figure(figsize=(13,10))
-gc = FITSFigure(MapHer250,figure=fig)
-gc.show_colorscale(cmap='default',vmin = 22.1,vmax = 24.5)
+gc = FITSFigure(MapHer250log,figure=fig,vmin = 22.1,vmax = 24.5)
+gc.show_colorscale(cmap='default')
 gc.add_colorbar(location='right', width=0.2, pad=0.25, ticks=None,axis_label_text= 'log Column Density')
 gc.show_contour(colors = 'white',levels = 7)
-gc.show_vectors(p,pa,scale=scalevec,step=4,color='black',linewidth=3.5)
-gc.show_vectors(p,pa,scale=scalevec,step=4,color='yellow',linewidth=2.0)
+# gc.show_vectors(p,pa,scale=scalevec,step=4,color='black',linewidth=3.5)
+# gc.show_vectors(p,pa,scale=scalevec,step=4,color='yellow',linewidth=2.0)
 vecscale = scalevec * pxscale/3600
 gc.add_scalebar(vec_legend*vecscale,r'$p\%$ ='+str(vec_legend),corner='bottom right',frame=True,color='black')
 plt.show()
+
+
+fig = plt.figure(figsize=(13,10))
+gc = FITSFigure(MapHer250log,figure=fig,vmin = 22.1,vmax = 24.5)
+gc.show_colorscale(cmap='default')
+gc.add_colorbar(location='right', width=0.2, pad=0.25, ticks=None,axis_label_text= 'log Column Density')
+gc.show_contour(colors = 'white',levels = 7)
+gc.show_circles(RA_array,DEC_array,angle_FWHMa)
+# gc.show_vectors(p,pa,scale=scalevec,step=4,color='black',linewidth=3.5)
+# gc.show_vectors(p,pa,scale=scalevec,step=4,color='yellow',linewidth=2.0)
+vecscale = scalevec * pxscale/3600
+gc.add_scalebar(vec_legend*vecscale,r'$p\%$ ='+str(vec_legend),corner='bottom right',frame=True,color='black')
+plt.show()
+
 
 # %%
 
@@ -335,8 +456,8 @@ plt.show()
 ###### making the S map
 
 set_delta = 9/60   # in arcminute
-S_map = BlankedMapPolAngle.copy()
-sigma_S_map = BlankedMapPolAngleError.copy()
+S_map = BlankedMapPolAngle_2025.copy()
+sigma_S_map = BlankedMapPolAngleError_2025.copy()
 
 for i in range(RA_grid.shape[0]):
     for j in range(RA_grid.shape[1]):
@@ -352,8 +473,8 @@ for i in range(RA_grid.shape[0]):
         seperation_selector = (seperation.data >0)
 
         ##### making the dispersion map
-        tempa = BlankedMapStokesQ.data*BlankedMapStokesU.data[i,j] - BlankedMapStokesQ.data[i,j]*BlankedMapStokesU.data
-        tempb = BlankedMapStokesQ.data*BlankedMapStokesQ.data[i,j] + BlankedMapStokesU.data*BlankedMapStokesU.data[i,j]
+        tempa = BlankedMapStokesQ_2025.data*BlankedMapStokesU_2025.data[i,j] - BlankedMapStokesQ_2025.data[i,j]*BlankedMapStokesU_2025.data
+        tempb = BlankedMapStokesQ_2025.data*BlankedMapStokesQ_2025.data[i,j] + BlankedMapStokesU_2025.data*BlankedMapStokesU_2025.data[i,j]
         AngleDiff_v2 = 0.5 * (180/np.pi)*np.arctan2(tempa,tempb)
         S = np.nanmean(AngleDiff_v2[seperation_selector]**2)**0.5
         S_map.data[i,j] = S
@@ -364,8 +485,8 @@ for i in range(RA_grid.shape[0]):
         N = np.nansum(~np.isnan(seperation.data))
         # print(N)
         temp1 = (( 1 /(S_map.data[i,j]*N) )**2)
-        temp2 = np.nansum((AngleDiff_v2[seperation_selector])**2)*(BlankedMapPolAngleError.data[i,j]**2)
-        temp3 =  np.nansum((AngleDiff_v2[seperation_selector]*BlankedMapPolAngleError.data[seperation_selector])**2)
+        temp2 = np.nansum((AngleDiff_v2[seperation_selector])**2)*(BlankedMapPolAngleError_2025.data[i,j]**2)
+        temp3 =  np.nansum((AngleDiff_v2[seperation_selector]*BlankedMapPolAngleError_2025.data[seperation_selector])**2)
 
         
         # temp1 = ( ( BlankedMapPolAngleError.data[i,j]/( S_map.data[i,j]*N ) )**2)*(np.nansum(AngleDiff_v2[seperation_selector])**2)
@@ -379,13 +500,12 @@ S_map_deb = S_map.copy()
 
 S_map_deb.data = np.sqrt(S_map.data**2 - sigma_S_map.data**2)
 
-# S_map_deb.writeto('../FITS_file/new_fits/S_map_deb_old.fits')
-# sigma_S_map.writeto('../FITS_file/new_fits/sigma_S_old.fits')
-
+# S_map_deb.writeto('../FITS_file/new_fits/S_map_deb_new_2025.fits')
+# sigma_S_map.writeto('../FITS_file/new_fits/sigma_S_new_2025.fits')
 
 #%%
-S_map_deb =  fits.open('../FITS_file/new_fits/S_map_deb_old.fits')[1]
-sigma_S_map = fits.open('../FITS_file/new_fits/sigma_S_old.fits')[1]
+S_map_deb =  fits.open('../FITS_file/new_fits/S_map_deb_new_2025.fits')[1]
+sigma_S_map = fits.open('../FITS_file/new_fits/sigma_S_new_2025.fits')[1]
 
 Selector = S_map_deb.data/sigma_S_map.data < 3
 S_map_deb.data[Selector] = np.nan
@@ -395,11 +515,6 @@ sigma_S_map.data[Selector] = np.nan
 # Selector = S_map_deb1.data/sigma_S_map1.data < 5
 # S_map_deb1.data[Selector] = np.nan
 # sigma_S_map1.data[Selector] = np.nan
-dense_cores = pd.read_csv('../data/dense_cores - Copy.tsv',delimiter='\t',header=None)
-dense_cores.head()
-
-RA_array = np.array(dense_cores[7])
-DEC_array = np.array(dense_cores[8])
 
 
 fig = plt.figure(figsize=(13,10))
@@ -415,10 +530,11 @@ plt.show()
 
 plt.figure()
 plt.hist(S_map_deb.data.flatten(),50)
-plt.title('Distribution of debiased angle dispersion old data')
+plt.title('Distribution of debiased angle dispersion 2025 data')
 plt.xlabel('debiased S')
 plt.ylabel('Number')
 plt.show()
+
 # fig = plt.figure(figsize=(13,10))
 # gc1 = FITSFigure(S_map_deb1,figure=fig)
 # gc1.show_colorscale(cmap='default')
@@ -434,21 +550,40 @@ plt.show()
 ############### changing data to 1D array
 s_array = S_map_deb.data.flatten()[::4]
 es_array = sigma_S_map.data.flatten()[::4]
-p_array = BlankedMapPol.data.flatten()[::4]
-ep_array = BlankedMapDebPolError.data.flatten()[::4]
-I_array = BlankedMapStokesI.data.flatten()[::4]
-eI_array = BlankedMapStokesIError.data.flatten()[::4]
-nh2_array = BlankedMapColumnDensity.data.flatten()[::4]
-micron8_array = BlankedMap8Mircon.data.flatten()[::4]
-temp_array = BlankedMapTemperature.data.flatten()[::4]
+p_array = BlankedMapPol_2025.data.flatten()[::4]
+ep_array = BlankedMapDebPolError_2025.data.flatten()[::4]
+I_array = BlankedMapStokesI_2025.data.flatten()[::4]
+eI_array = BlankedMapStokesIError_2025.data.flatten()[::4]
+nh2_array = BlankedMapColumnDensity_2025.data.flatten()[::4]
+micron8_array = BlankedMap8Mircon_2025.data.flatten()[::4]
+temp_array = BlankedMapTemperature_2025.data.flatten()[::4]
 
 #%%
-
 #### single paramter fitting
 
 plt.figure(figsize=(12,8))
+plt.scatter(nh2_array,I_array)
+param,x,y = Functions.binning_equal_width(nh2_array, I_array,np.ones_like(nh2_array),eI_array,10)
+valid = ~(np.isnan(I_array)|np.isnan(nh2_array)|np.isnan(eI_array))
+data = (nh2_array[valid],I_array[valid],np.ones_like(nh2_array)[valid],eI_array[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'log(I) = C + $\alpha$log($N$){linebreak}  $\alpha$: {alpha:.3f}{pm}{error:.3f}'.format(frac = r'$\%$',I = r'$_{I}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'tab:green',linewidth = 2.5,label = label_temp)
+# # plt.plot(x,y,'tab:red',linewidth = 2.5,label = label_temp)
+plt.title(r'$I$ vs $N$')
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel('N')
+plt.ylabel(r'$I$')
+plt.tight_layout()
+plt.legend()
+plt.show()
+
+
+#%%
+plt.figure(figsize=(12,8))
 plt.scatter(I_array,p_array)
-param,x,y = Functions.binning_equal_width(I_array,p_array,eI_array,ep_array,15)
+param,x,y = Functions.binning_equal_width(I_array,p_array,eI_array,ep_array,10)
 valid = ~(np.isnan(I_array)|np.isnan(p_array)|np.isnan(eI_array)|np.isnan(ep_array))
 data = (I_array[valid],p_array[valid],eI_array[valid],ep_array[valid])
 res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
@@ -463,15 +598,13 @@ plt.ylabel(r'$p\%$')
 plt.tight_layout()
 plt.legend()
 plt.show()
-#%%
 
-# nh2_bins = np.linspace(np.nanmin(np.log10(nh2_array)),np.nanmax(np.log10(nh2_array)),25)
-# p_bins = np.linspace(np.nanmin(np.log10(p_array)),np.nanmax(np.log10(p_array)),25)
+#%%
 
 plt.figure(figsize=(12,8))
 plt.scatter(nh2_array,p_array,c = "#1F77B4")
 # plt.hist2d(nh2_array,p_array,bins = [10**nh2_bins,10**p_bins])
-NH2_param,x,y = Functions.binning_equal_width(nh2_array,p_array,np.ones_like(nh2_array),ep_array,15)
+NH2_param,x,y = Functions.binning_equal_width(nh2_array,p_array,np.ones_like(nh2_array),ep_array,10)
 valid = ~(np.isnan(nh2_array)|np.isnan(p_array)|np.isnan(np.ones_like(nh2_array))|np.isnan(ep_array))
 data = (nh2_array[valid],p_array[valid],np.ones_like(nh2_array)[valid],ep_array[valid])
 res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
@@ -530,7 +663,7 @@ plt.show()
 plt.figure(figsize=(12,8))
 plt.scatter(p_array,s_array)
 # plt.hist2d(p_array,s_array,bins=[10**p_bins,10**s_bins])
-param,x,y = Functions.binning_equal_width(p_array,s_array,ep_array,es_array,15)
+param,x,y = Functions.binning_equal_width(p_array,s_array,ep_array,es_array,10,min_n = 5)
 valid = ~(np.isnan(p_array)|np.isnan(s_array)|np.isnan(ep_array)|np.isnan(es_array))
 data = (p_array[valid],s_array[valid],ep_array[valid],es_array[valid])
 res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
@@ -550,7 +683,7 @@ plt.show()
 #%%
 plt.figure(figsize=(16,8))
 plt.scatter(nh2_array,s_array)
-param,x,y = Functions.binning_equal_width((nh2_array),(s_array),np.ones_like(nh2_array),es_array,15)
+param,x,y = Functions.binning_equal_width((nh2_array),(s_array),np.ones_like(nh2_array),es_array,10,min_n=1)
 valid = ~(np.isnan(nh2_array)|np.isnan(s_array)|np.isnan(np.ones_like(nh2_array))|np.isnan(es_array))
 data = ((nh2_array)[valid],(s_array)[valid],np.ones_like(nh2_array)[valid],(es_array)[valid])
 res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
@@ -564,6 +697,28 @@ plt.xlabel('N')
 plt.ylabel(r'$S$')
 plt.tight_layout()
 plt.legend()
+plt.show()
+
+
+#%%
+
+plt.figure(figsize=(16,8))
+plt.scatter(I_array,s_array)
+param,x,y = Functions.binning_equal_width((I_array),(s_array),eI_array,es_array,10,min_n=1)
+valid = ~(np.isnan(I_array)|np.isnan(s_array)|np.isnan(eI_array)|np.isnan(es_array))
+data = ((I_array)[valid],(s_array)[valid],eI_array[valid],(es_array)[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'log(S) = C + $\alpha$log($I$){linebreak}$\alpha$: {alpha_nh2:.3f}{pm}{error:.3f}'.format(frac = r'$\%$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'tab:green',linewidth = 2.5,label = label_temp)
+plt.plot(x,y,'tab:red',linewidth = 2.5,label = label_temp)
+plt.title(r'$S$ vs $I$')
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel('I')
+plt.ylabel(r'$S$')
+plt.tight_layout()
+plt.legend()
+plt.show()
 
 #%%
 
@@ -579,7 +734,7 @@ error = np.sqrt((p_array*es_array)**2+ (ep_array*s_array)**2)
 plt.figure(figsize=(16,8))
 plt.scatter(nh2_array,p_array*s_array)
 # param,x,y = Functions.binning_equal_width((nh2_array),(p_array*s_array),np.ones_like(nh2_array),(p_array*es_array + ep_array*s_array),15)
-param,x,y = Functions.binning_equal_width((nh2_array),(p_array*s_array),np.ones_like(nh2_array),error,15)
+param,x,y = Functions.binning_equal_width((nh2_array),(p_array*s_array),np.ones_like(nh2_array),error,10)
 
 # valid = ~(np.isnan(nh2_array)|np.isnan(p_array*s_array)|np.isnan(np.ones_like(nh2_array))|np.isnan(p_array*es_array + ep_array*s_array))
 valid = ~(np.isnan(nh2_array)|np.isnan(p_array*s_array)|np.isnan(np.ones_like(nh2_array))|np.isnan(error))
@@ -587,14 +742,47 @@ valid = ~(np.isnan(nh2_array)|np.isnan(p_array*s_array)|np.isnan(np.ones_like(nh
 # data = ((nh2_array)[valid],(p_array*s_array)[valid],np.ones_like(nh2_array)[valid],(p_array*es_array + ep_array*s_array)[valid])
 data = ((nh2_array)[valid],(p_array*s_array)[valid],np.ones_like(nh2_array)[valid],(error)[valid])
 
-res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
 label_temp = r'log(p{frac}*S) = C + $\alpha$log($N$){linebreak}$\alpha$: {alpha_nh2:.3f}{pm}{error:.3f}'.format(frac = r'$\%$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
-# plt.plot(x,y,'tab:green',linewidth = 2.5,label = label_temp)
-# plt.plot(x,np.ones_like(x)*np.nanmean(p_array_copy*s_array_copy),'tab:red',linewidth = 2.5,label = "mean : {mean:.3f}".format(mean = np.nanmean(p_array_copy*s_array_copy)))
+plt.plot(x,y,'tab:green',linewidth = 2.5,label = label_temp)
+plt.plot(x,np.ones_like(x)*np.nanmean(p_array_copy*s_array_copy),'tab:red',linewidth = 2.5,label = "mean : {mean:.3f}".format(mean = np.nanmean(p_array_copy*s_array_copy)))
 plt.title(r'$p\%*S$ vs $N$')
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel('N')
+plt.ylabel(r'$p\%*S$')
+plt.tight_layout()
+plt.legend()
+plt.show()
+
+#%%
+I_array_copy = I_array.copy()
+# p_array_copy = p_array.copy()
+# s_array_copy = s_array.copy()
+error = np.sqrt((p_array*es_array)**2+ (ep_array*s_array)**2)
+
+# Selector = (np.log10(nh2_array)<22)|(np.log10(nh2_array)>23)
+# p_array_copy[Selector] = np.nan
+# s_array_copy[Selector] = np.nan
+
+
+plt.figure(figsize=(16,8))
+plt.scatter(I_array_copy,p_array*s_array)
+# param,x,y = Functions.binning_equal_width((nh2_array),(p_array*s_array),np.ones_like(nh2_array),(p_array*es_array + ep_array*s_array),15)
+param,x,y = Functions.binning_equal_width(I_array_copy,(p_array*s_array),eI_array,error,10)
+
+# valid = ~(np.isnan(nh2_array)|np.isnan(p_array*s_array)|np.isnan(np.ones_like(nh2_array))|np.isnan(p_array*es_array + ep_array*s_array))
+valid = ~(np.isnan(I_array_copy)|np.isnan(p_array*s_array)|np.isnan(eI_array)|np.isnan(error))
+
+# data = ((nh2_array)[valid],(p_array*s_array)[valid],np.ones_like(nh2_array)[valid],(p_array*es_array + ep_array*s_array)[valid])
+data = (I_array_copy[valid],(p_array*s_array)[valid],eI_array[valid],(error)[valid])
+
+label_temp = r'log(p{frac}*S) = C + $\alpha$log($I$){linebreak}$\alpha$: {alpha_nh2:.3f}{pm}{error:.3f}'.format(frac = r'$\%$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'tab:green',linewidth = 2.5,label = label_temp)
+# plt.plot(x,np.ones_like(x)*np.nanmean(p_array_copy*s_array_copy),'tab:red',linewidth = 2.5,label = "mean : {mean:.3f}".format(mean = np.nanmean(p_array_copy*s_array_copy)))
+plt.title(r'$p\%*S$ vs $I$')
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel('I')
 plt.ylabel(r'$p\%*S$')
 plt.tight_layout()
 plt.legend()
@@ -700,38 +888,49 @@ print('nh2 index error :', np.sqrt(PSNH2_param_cov[2,2]))
 
 #%%
 
+# Mask_2025 = hdul10[0]
+# MaskOF_2025 = hdul11[0]
+
 plt.figure(figsize=(6,8))
 # plt.imshow(CheckMapTemperature.data,origin='lower')
-im =plt.imshow(Mask.data ,origin='lower',cmap = 'RdBu')
+im =plt.imshow(Mask_2025.data ,origin='lower',cmap = 'RdBu')
 plt.colorbar(im)
 plt.title("Mask")
 plt.tight_layout()
 plt.show()
 
+
+plt.figure(figsize=(6,8))
+# plt.imshow(CheckMapTemperature.data,origin='lower')
+im =plt.imshow(MaskOF_2025.data ,origin='lower',cmap = 'RdBu')
+plt.colorbar(im)
+plt.title("Mask")
+plt.tight_layout()
+plt.show()
 #%%
 ################ Case 2
 
 s_C2_R1 = S_map_deb.copy()
 es_C2_R1 = sigma_S_map.copy()
-p_C2_R1 = BlankedMapPol.copy()
-ep_C2_R1 = BlankedMapDebPolError.copy()
-I_C2_R1 = BlankedMapStokesI.copy()
-eI_C2_R1 = BlankedMapStokesIError.copy()
-nh2_C2_R1 = BlankedMapColumnDensity.copy()
-micron8_C2_R1 = BlankedMap8Mircon.copy()
-temp_C2_R1 = BlankedMapTemperature.copy()
+p_C2_R1 = BlankedMapPol_2025.copy()
+ep_C2_R1 = BlankedMapDebPolError_2025.copy()
+I_C2_R1 = BlankedMapStokesI_2025.copy()
+eI_C2_R1 = BlankedMapStokesIError_2025.copy()
+nh2_C2_R1 = BlankedMapColumnDensity_2025.copy()
+micron8_C2_R1 = BlankedMap8Mircon_2025.copy()
+temp_C2_R1 = BlankedMapTemperature_2025.copy()
 
 s_C2_rest = S_map_deb.copy()
 es_C2_rest = sigma_S_map.copy()
-p_C2_rest = BlankedMapPol.copy()
-ep_C2_rest = BlankedMapDebPolError.copy()
-I_C2_rest = BlankedMapStokesI.copy()
-eI_C2_rest = BlankedMapStokesIError.copy()
-nh2_C2_rest = BlankedMapColumnDensity.copy()
-micron8_C2_rest = BlankedMap8Mircon.copy()
-temp_C2_rest = BlankedMapTemperature.copy()
+p_C2_rest = BlankedMapPol_2025.copy()
+ep_C2_rest = BlankedMapDebPolError_2025.copy()
+I_C2_rest = BlankedMapStokesI_2025.copy()
+eI_C2_rest = BlankedMapStokesIError_2025.copy()
+nh2_C2_rest = BlankedMapColumnDensity_2025.copy()
+micron8_C2_rest = BlankedMap8Mircon_2025.copy()
+temp_C2_rest = BlankedMapTemperature_2025.copy()
 
-Selector = (Mask.data != 1)
+Selector = (Mask_2025.data != 1)
 
 s_C2_R1.data[Selector] = np.nan
 es_C2_R1.data[Selector] = np.nan
@@ -806,7 +1005,6 @@ plt.tight_layout()
 
 # Show the plots
 plt.show()
-
 
 # %%
 array1 = I_C2_R1_array.copy()
@@ -952,7 +1150,7 @@ weights4 = ep_C2_rest_array
 
 plt.figure(figsize=(12,8))
 plt.scatter(array1,array2,c='#4575b4',label = 'R1')
-# plt.scatter(array3,array4, c='#d73027',label = r'R2,R3,R4,R5,R6{linebreak}log(p{frac}) = C + $\alpha_s$log(S)'.format(frac = r'$\%$',linebreak='\n'))
+plt.scatter(array3,array4, c='#d73027',label = r'R2,R3,R4,R5,R6{linebreak}log(p{frac}) = C + $\alpha_s$log(S)'.format(frac = r'$\%$',linebreak='\n'))
 
 param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
 valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
@@ -961,12 +1159,12 @@ res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=
 label_temp = r'$\alpha${R}: {alpha_s:.3f}{pm}{error:.3f}'.format(R= r'$_{R1}$',alpha_s = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
 plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
 
-# param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
-# valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
-# data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
-# res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
-# label_temp = r'$\alpha${R}: {alpha_s:.3f}{pm}{error:.3f}'.format(R= r'$_{rest}$',alpha_s = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
-# plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_s:.3f}{pm}{error:.3f}'.format(R= r'$_{rest}$',alpha_s = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
 
 plt.title(r'$p\%$ vs S')
 plt.xscale('log')
@@ -1000,8 +1198,6 @@ valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2
 data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
 res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
 label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R= r'$_{R1}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
-
-
 plt.plot(x,y,'tab:red',linewidth = 3.5,label = label_temp)
 
 param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,15,"#E377C2","#7F7F7F")
@@ -1034,7 +1230,6 @@ weights3 = np.ones_like(nh2_C2_rest_array)
 array4 = p_C2_rest_array*s_C2_rest_array
 weights4 = np.sqrt((ep_C2_rest_array*s_C2_rest_array)**2 + (es_C2_rest_array*p_C2_rest_array)**2)
 # weights4 = ep_C2_rest_array*s_C2_rest_array + es_C2_rest_array*p_C2_rest_array
-
 
 plt.figure(figsize=(12,8))
 plt.scatter(array1,array2,c='#4575b4',label = 'R1')
@@ -1661,19 +1856,19 @@ array1 = nh2_C3_R1_array
 weights1 = np.ones_like(nh2_C3_R1_array)
 
 array2 = p_C3_R1_array*s_C3_R1_array
-weights2 = np.sqrt(ep_C3_R1_array*s_C3_R1_array**2 + es_C2_R1_array*p_C3_R1_array**2)
+weights2 = ep_C3_R1_array*s_C3_R1_array + es_C2_R1_array*p_C3_R1_array
 
 array3 =nh2_C3_rest_array
 weights3 = np.ones_like(nh2_C3_rest_array)
 
 array4 = p_C3_rest_array*s_C3_rest_array
-weights4 = np.sqrt(ep_C3_rest_array*s_C3_rest_array**2 + es_C3_rest_array*p_C3_rest_array**2)
+weights4 = ep_C3_rest_array*s_C3_rest_array + es_C3_rest_array*p_C3_rest_array
 
 array5 = nh2_C3_R6_array
 weights5 = np.ones_like(nh2_C3_R6_array)
 
 array6 = p_C3_R6_array*s_C3_R6_array
-weights6 = np.sqrt(ep_C3_R6_array*s_C3_R6_array**2 + es_C3_R6_array*p_C3_R6_array**2)
+weights6 = ep_C3_R6_array*s_C3_R6_array + es_C3_R6_array*p_C3_R6_array
 
 plt.figure(figsize=(12,8))
 plt.scatter(array1,array2,c='#4575b4',label = 'R1')
@@ -2164,6 +2359,1413 @@ plt.xlabel('N')
 plt.ylabel(r'$p\%$')
 plt.legend()
 plt.tight_layout()
+plt.show()
+
+# %%
+
+
+s_C3_R1 = S_map_deb.copy()
+es_C3_R1 = sigma_S_map.copy()
+p_C3_R1 = BlankedMapPol_2025.copy()
+ep_C3_R1 = BlankedMapDebPolError_2025.copy()
+I_C3_R1 = BlankedMapStokesI_2025.copy()
+eI_C3_R1 = BlankedMapStokesIError_2025.copy()
+nh2_C3_R1 = BlankedMapColumnDensity_2025.copy()
+micron8_C3_R1 = BlankedMap8Mircon_2025.copy()
+temp_C3_R1 = BlankedMapTemperature_2025.copy()
+
+s_C3_OF = S_map_deb.copy()
+es_C3_OF = sigma_S_map.copy()
+p_C3_OF = BlankedMapPol_2025.copy()
+ep_C3_OF = BlankedMapDebPolError_2025.copy()
+I_C3_OF = BlankedMapStokesI_2025.copy()
+eI_C3_OF = BlankedMapStokesIError_2025.copy()
+nh2_C3_OF = BlankedMapColumnDensity_2025.copy()
+micron8_C3_OF = BlankedMap8Mircon_2025.copy()
+temp_C3_OF = BlankedMapTemperature_2025.copy()
+
+s_C3_rest = S_map_deb.copy()
+es_C3_rest = sigma_S_map.copy()
+p_C3_rest = BlankedMapPol_2025.copy()
+ep_C3_rest = BlankedMapDebPolError_2025.copy()
+I_C3_rest = BlankedMapStokesI_2025.copy()
+eI_C3_rest = BlankedMapStokesIError_2025.copy()
+nh2_C3_rest = BlankedMapColumnDensity_2025.copy()
+micron8_C3_rest = BlankedMap8Mircon_2025.copy()
+temp_C3_rest = BlankedMapTemperature_2025.copy()
+
+Selector = (MaskOF_2025.data != 1)
+
+s_C3_R1.data[Selector] = np.nan
+es_C3_R1.data[Selector] = np.nan
+p_C3_R1.data[Selector] = np.nan
+ep_C3_R1.data[Selector] = np.nan
+I_C3_R1.data[Selector] = np.nan
+eI_C3_R1.data[Selector] = np.nan
+nh2_C3_R1.data[Selector] = np.nan
+micron8_C3_R1.data[Selector] = np.nan
+temp_C3_R1.data[Selector] = np.nan
+
+
+Selector = (MaskOF_2025.data != 7)
+
+s_C3_OF.data[Selector] = np.nan
+es_C3_OF.data[Selector] = np.nan
+p_C3_OF.data[Selector] = np.nan
+ep_C3_OF.data[Selector] = np.nan
+I_C3_OF.data[Selector] = np.nan
+eI_C3_OF.data[Selector] = np.nan
+nh2_C3_OF.data[Selector] = np.nan
+micron8_C3_OF.data[Selector] = np.nan
+temp_C3_OF.data[Selector] = np.nan
+
+
+
+
+Selector = ((MaskOF_2025.data == 7)|(MaskOF_2025.data == 1))
+s_C3_rest.data[Selector] = np.nan
+es_C3_rest.data[Selector] = np.nan
+p_C3_rest.data[Selector] = np.nan
+ep_C3_rest.data[Selector] = np.nan
+I_C3_rest.data[Selector] = np.nan
+eI_C3_rest.data[Selector] = np.nan
+nh2_C3_rest.data[Selector] = np.nan
+micron8_C3_rest.data[Selector] = np.nan
+temp_C3_rest.data[Selector] = np.nan
+
+
+s_C3_R1_array = s_C3_R1.data.flatten()[::4]
+es_C3_R1_array = es_C3_R1.data.flatten()[::4]
+p_C3_R1_array = p_C3_R1.data.flatten()[::4]
+ep_C3_R1_array = ep_C3_R1.data.flatten()[::4]
+I_C3_R1_array = I_C3_R1.data.flatten()[::4]
+eI_C3_R1_array = eI_C3_R1.data.flatten()[::4]
+nh2_C3_R1_array = nh2_C3_R1.data.flatten()[::4]
+micron8_C3_R1_array = micron8_C3_R1.data.flatten()[::4]
+temp_C3_R1_array = temp_C3_R1.data.flatten()[::4]
+
+
+s_C3_OF_array = s_C3_OF.data.flatten()[::4]
+es_C3_OF_array = es_C3_OF.data.flatten()[::4]
+p_C3_OF_array = p_C3_OF.data.flatten()[::4]
+ep_C3_OF_array = ep_C3_OF.data.flatten()[::4]
+I_C3_OF_array = I_C3_OF.data.flatten()[::4]
+eI_C3_OF_array = eI_C3_OF.data.flatten()[::4]
+nh2_C3_OF_array = nh2_C3_OF.data.flatten()[::4]
+micron8_C3_OF_array = micron8_C3_OF.data.flatten()[::4]
+temp_C3_OF_array = temp_C3_OF.data.flatten()[::4]
+
+
+s_C3_rest_array = s_C3_rest.data.flatten()[::4]
+es_C3_rest_array = es_C3_rest.data.flatten()[::4]
+p_C3_rest_array = p_C3_rest.data.flatten()[::4]
+ep_C3_rest_array = ep_C3_rest.data.flatten()[::4]
+I_C3_rest_array = I_C3_rest.data.flatten()[::4]
+eI_C3_rest_array = eI_C3_rest.data.flatten()[::4]
+nh2_C3_rest_array = nh2_C3_rest.data.flatten()[::4]
+micron8_C3_rest_array = micron8_C3_rest.data.flatten()[::4]
+temp_C3_rest_array = temp_C3_rest.data.flatten()[::4]
+
+fig, ax = plt.subplots(3, 1, figsize=(12, 12))
+
+# First plot
+ax[0].imshow(I_C3_R1.data,origin = 'lower')
+ax[0].set_title('Ridge')
+# ax[0].legend()
+# ax[0].grid()
+
+# Second plot
+ax[1].imshow(I_C3_OF.data,origin = 'lower')
+ax[1].set_title('outflow')
+# ax[1].legend()
+# ax[1].grid()
+
+ax[2].imshow(I_C3_rest.data,origin = 'lower')
+ax[2].set_title('rest')
+
+# Adjust layout
+plt.tight_layout()
+
+# Show the plots
+plt.show()
+
+#%%
+
+
+array1 = I_C3_R1_array
+weights1 = eI_C3_R1_array
+
+array2 = p_C3_R1_array
+weights2 = ep_C3_R1_array
+
+array3 =I_C3_rest_array
+weights3 = eI_C3_rest_array
+
+array4 = p_C3_rest_array
+weights4 = ep_C3_rest_array
+
+array5 = I_C3_OF_array
+weights5 = eI_C3_OF_array
+
+array6 = p_C3_OF_array
+weights6 = ep_C3_OF_array
+
+plt.figure(figsize=(12,8))
+plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(p{frac}) = C + $\alpha$log(I)'.format(frac = r'$\%$',linebreak='\n'))
+
+param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_I:.3f}{pm}{error:.3f}'.format(R = r'$_{ridge}$',alpha_I = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_I:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha_I = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_I:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha_I = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+
+plt.title(r'$p\%$ vs I')
+plt.xscale('log')
+plt.yscale('log')
+plt.yticks([1e0,1e1])
+plt.xlabel('I')
+plt.ylabel(r'$p\%$')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+
+# %%
+
+
+array1 = nh2_C3_R1_array
+weights1 = np.ones_like(nh2_C3_R1_array)
+
+array2 = p_C3_R1_array
+weights2 = ep_C3_R1_array
+
+array3 =nh2_C3_rest_array
+weights3 = np.ones_like(nh2_C3_rest_array)
+
+array4 = p_C3_rest_array
+weights4 = ep_C3_rest_array
+
+array5 = nh2_C3_OF_array
+weights5 = np.ones_like(nh2_C3_OF_array)
+
+array6 = p_C3_OF_array
+weights6 = ep_C3_OF_array
+
+plt.figure(figsize=(12,8))
+plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(p{frac}) = C + $\alpha$log($N$)'.format(frac = r'$\%$',linebreak='\n',nh2 = r'$_{N}$'))
+
+param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{ridge}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+
+plt.title(r'$p\%$ vs N')
+plt.xscale('log')
+plt.yscale('log')
+plt.yticks([1e0,1e1])
+plt.xticks(np.array([1e22,1e23,1e24]))
+plt.xlabel('N')
+plt.ylabel(r'$p\%$')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+
+#%%
+array1 = I_C3_R1_array
+weights1 = eI_C3_R1_array
+
+array2 = s_C3_R1_array
+weights2 = es_C3_R1_array
+
+array3 =I_C3_rest_array
+weights3 = eI_C3_rest_array
+
+array4 = s_C3_rest_array
+weights4 = es_C3_rest_array
+
+array5 = I_C3_OF_array
+weights5 = eI_C3_OF_array
+
+array6 = s_C3_OF_array
+weights6 = es_C3_OF_array
+
+plt.figure(figsize=(12,8))
+plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(S) = C + $\alpha$log(I)'.format(frac = r'$\%$',linebreak='\n'))
+
+param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{ridge}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+
+plt.title(r'S vs I')
+plt.xscale('log')
+plt.yscale('log')
+plt.yticks([1e0,1e1])
+plt.xlabel('I')
+plt.ylabel(r'$S$')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+#%%
+
+array1 = nh2_C3_R1_array
+weights1 = np.ones_like(nh2_C3_R1_array)
+
+array2 = s_C3_R1_array
+weights2 = es_C3_R1_array
+
+array3 =nh2_C3_rest_array
+weights3 = np.ones_like(nh2_C3_rest_array)
+
+array4 = s_C3_rest_array
+weights4 = es_C3_rest_array
+
+array5 = nh2_C3_OF_array
+weights5 = np.ones_like(nh2_C3_OF_array)
+
+array6 = s_C3_OF_array
+weights6 = es_C3_OF_array
+
+plt.figure(figsize=(12,8))
+plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(S) = C + $\alpha$log($N$)'.format(frac = r'$\%$',linebreak='\n',nh2 = r'$_{N}$'))
+
+param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{ridge}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+
+plt.title(r'S vs N')
+plt.xscale('log')
+plt.yscale('log')
+plt.yticks([1e0,1e1])
+plt.xticks(np.array([1e22,1e23,1e24]))
+plt.xlabel('N')
+plt.ylabel(r'S')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+
+# %%
+
+array2 = s_C3_R1_array
+weights2 = es_C3_R1_array
+
+array1 = p_C3_R1_array
+weights1 = ep_C3_R1_array
+
+array4 =s_C3_rest_array
+weights4 = es_C3_rest_array
+
+array3 = p_C3_rest_array
+weights3 = ep_C3_rest_array
+
+array6 = s_C3_OF_array
+weights6 = es_C3_OF_array
+
+array5 = p_C3_OF_array
+weights5 = ep_C3_OF_array
+
+plt.figure(figsize=(12,8))
+plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(S) = C + $\alpha$log(p{frac})'.format(frac = r'$\%$',linebreak='\n'))
+
+param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{ridge}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+plt.title(r'S vs $p\%$ ')
+plt.xscale('log')
+plt.yscale('log')
+plt.ylabel('S')
+plt.xlabel(r'$p\%$')
+plt.tight_layout()
+plt.legend()
+plt.show()
+
+# %%
+
+array1 = nh2_C3_R1_array
+weights1 = np.ones_like(nh2_C3_R1_array)
+
+array2 = p_C3_R1_array*s_C3_R1_array
+weights2 = np.sqrt((ep_C3_R1_array*s_C3_R1_array)**2 + (es_C2_R1_array*p_C3_R1_array)**2)
+
+array3 =nh2_C3_rest_array
+weights3 = np.ones_like(nh2_C3_rest_array)
+
+array4 = p_C3_rest_array*s_C3_rest_array
+weights4 = np.sqrt((ep_C3_rest_array*s_C3_rest_array)**2 + (es_C3_rest_array*p_C3_rest_array)**2)
+
+array5 = nh2_C3_OF_array
+weights5 = np.ones_like(nh2_C3_OF_array)
+
+array6 = p_C3_OF_array*s_C3_OF_array
+weights6 =  np.sqrt((ep_C3_OF_array*s_C3_OF_array)**2 + (es_C3_OF_array*p_C3_OF_array)**2)
+
+plt.figure(figsize=(12,8))
+plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(p{frac}*S) = C + $\alpha$log($N$)'.format(frac = r'$\%$',linebreak='\n'))
+
+param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{ridge}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+plt.title(r'$p\%*S$ vs $N$')
+plt.xlabel('N')
+plt.ylabel(r'$p\%*S$')
+plt.xscale('log')
+plt.yscale('log')
+plt.tight_layout()
+plt.legend()
+plt.show()
+
+
+# %%
+
+
+array1 = nh2_C3_R1_array
+weights1 = np.ones_like(nh2_C3_R1_array)
+
+
+array2 = temp_C3_R1_array
+weights2 = np.ones_like(temp_C3_R1_array)
+
+# array2 = p_C3_R1_array
+# weights2 = ep_C3_R1_array
+
+array3 =nh2_C3_rest_array
+weights3 = np.ones_like(nh2_C3_rest_array)
+
+array4 =temp_C3_rest_array
+weights4 = np.ones_like(temp_C3_rest_array)
+
+
+array5 = nh2_C3_OF_array
+weights5 = np.ones_like(nh2_C3_OF_array)
+
+
+array6 = temp_C3_OF_array
+weights6 = np.ones_like(temp_C3_OF_array)
+
+
+
+plt.figure(figsize=(12,8))
+plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(T) = C + $\alpha$log(N)'.format(linebreak='\n'))
+
+param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{ridge}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+plt.title(r'T vs N')
+plt.xscale('log')
+plt.yscale('log')
+plt.ylabel('T')
+plt.xlabel(r'N')
+plt.tight_layout()
+plt.legend()
+plt.show()
+
+#%%
+
+
+array1 = temp_C3_R1_array
+weights1 = np.ones_like(temp_C3_R1_array)
+
+array2 = p_C3_R1_array
+weights2 = ep_C3_R1_array
+
+array3 =temp_C3_rest_array
+weights3 = np.ones_like(temp_C3_rest_array)
+
+
+array4 = p_C3_rest_array
+weights4 = ep_C3_rest_array
+
+
+array5 = temp_C3_OF_array
+weights5 = np.ones_like(temp_C3_OF_array)
+
+
+array6 = p_C3_OF_array
+weights6 = ep_C3_OF_array
+
+plt.figure(figsize=(12,8))
+plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(p{frac}) = C + $\alpha$log(T)'.format(frac = r'$\%$',linebreak='\n'))
+
+param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_T:.3f}{pm}{error:.3f}'.format(R = r'$_{R1}$',alpha_T = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_T:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha_T = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_T:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha_T = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+plt.title(r'$p\%$ vs T')
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel('T')
+plt.ylabel(r'$p\%$')
+plt.tight_layout()
+plt.legend()
+plt.show()
+
+#%%
+
+# s_C3_R1 = S_map_deb.copy()
+# es_C3_R1 = sigma_S_map.copy()
+# p_C3_R1 = BlankedMapPol_2025.copy()
+# ep_C3_R1 = BlankedMapDebPolError_2025.copy()
+# I_C3_R1 = BlankedMapStokesI_2025.copy()
+# eI_C3_R1 = BlankedMapStokesIError_2025.copy()
+# nh2_C3_R1 = BlankedMapColumnDensity_2025.copy()
+# micron8_C3_R1 = BlankedMap8Mircon_2025.copy()
+# temp_C3_R1 = BlankedMapTemperature_2025.copy()
+
+s_C3_OF = S_map_deb.copy()
+es_C3_OF = sigma_S_map.copy()
+p_C3_OF = BlankedMapPol_2025.copy()
+ep_C3_OF = BlankedMapDebPolError_2025.copy()
+I_C3_OF = BlankedMapStokesI_2025.copy()
+eI_C3_OF = BlankedMapStokesIError_2025.copy()
+nh2_C3_OF = BlankedMapColumnDensity_2025.copy()
+micron8_C3_OF = BlankedMap8Mircon_2025.copy()
+temp_C3_OF = BlankedMapTemperature_2025.copy()
+
+s_C3_rest = S_map_deb.copy()
+es_C3_rest = sigma_S_map.copy()
+p_C3_rest = BlankedMapPol_2025.copy()
+ep_C3_rest = BlankedMapDebPolError_2025.copy()
+I_C3_rest = BlankedMapStokesI_2025.copy()
+eI_C3_rest = BlankedMapStokesIError_2025.copy()
+nh2_C3_rest = BlankedMapColumnDensity_2025.copy()
+micron8_C3_rest = BlankedMap8Mircon_2025.copy()
+temp_C3_rest = BlankedMapTemperature_2025.copy()
+
+# Selector = (MaskOF_2025.data != 1)
+
+# s_C3_R1.data[Selector] = np.nan
+# es_C3_R1.data[Selector] = np.nan
+# p_C3_R1.data[Selector] = np.nan
+# ep_C3_R1.data[Selector] = np.nan
+# I_C3_R1.data[Selector] = np.nan
+# eI_C3_R1.data[Selector] = np.nan
+# nh2_C3_R1.data[Selector] = np.nan
+# micron8_C3_R1.data[Selector] = np.nan
+# temp_C3_R1.data[Selector] = np.nan
+
+
+Selector = (MaskOF_2025.data != 7)
+
+s_C3_OF.data[Selector] = np.nan
+es_C3_OF.data[Selector] = np.nan
+p_C3_OF.data[Selector] = np.nan
+ep_C3_OF.data[Selector] = np.nan
+I_C3_OF.data[Selector] = np.nan
+eI_C3_OF.data[Selector] = np.nan
+nh2_C3_OF.data[Selector] = np.nan
+micron8_C3_OF.data[Selector] = np.nan
+temp_C3_OF.data[Selector] = np.nan
+
+
+
+
+# Selector = ((MaskOF_2025.data == 7)|(MaskOF_2025.data == 1))
+Selector = ~Selector
+
+s_C3_rest.data[Selector] = np.nan
+es_C3_rest.data[Selector] = np.nan
+p_C3_rest.data[Selector] = np.nan
+ep_C3_rest.data[Selector] = np.nan
+I_C3_rest.data[Selector] = np.nan
+eI_C3_rest.data[Selector] = np.nan
+nh2_C3_rest.data[Selector] = np.nan
+micron8_C3_rest.data[Selector] = np.nan
+temp_C3_rest.data[Selector] = np.nan
+
+
+# s_C3_R1_array = s_C3_R1.data.flatten()[::4]
+# es_C3_R1_array = es_C3_R1.data.flatten()[::4]
+# p_C3_R1_array = p_C3_R1.data.flatten()[::4]
+# ep_C3_R1_array = ep_C3_R1.data.flatten()[::4]
+# I_C3_R1_array = I_C3_R1.data.flatten()[::4]
+# eI_C3_R1_array = eI_C3_R1.data.flatten()[::4]
+# nh2_C3_R1_array = nh2_C3_R1.data.flatten()[::4]
+# micron8_C3_R1_array = micron8_C3_R1.data.flatten()[::4]
+# temp_C3_R1_array = temp_C3_R1.data.flatten()[::4]
+
+
+s_C3_OF_array = s_C3_OF.data.flatten()[::4]
+es_C3_OF_array = es_C3_OF.data.flatten()[::4]
+p_C3_OF_array = p_C3_OF.data.flatten()[::4]
+ep_C3_OF_array = ep_C3_OF.data.flatten()[::4]
+I_C3_OF_array = I_C3_OF.data.flatten()[::4]
+eI_C3_OF_array = eI_C3_OF.data.flatten()[::4]
+nh2_C3_OF_array = nh2_C3_OF.data.flatten()[::4]
+micron8_C3_OF_array = micron8_C3_OF.data.flatten()[::4]
+temp_C3_OF_array = temp_C3_OF.data.flatten()[::4]
+
+
+s_C3_rest_array = s_C3_rest.data.flatten()[::4]
+es_C3_rest_array = es_C3_rest.data.flatten()[::4]
+p_C3_rest_array = p_C3_rest.data.flatten()[::4]
+ep_C3_rest_array = ep_C3_rest.data.flatten()[::4]
+I_C3_rest_array = I_C3_rest.data.flatten()[::4]
+eI_C3_rest_array = eI_C3_rest.data.flatten()[::4]
+nh2_C3_rest_array = nh2_C3_rest.data.flatten()[::4]
+micron8_C3_rest_array = micron8_C3_rest.data.flatten()[::4]
+temp_C3_rest_array = temp_C3_rest.data.flatten()[::4]
+
+# fig, ax = plt.subplots(3, 1, figsize=(12, 12))
+
+# # First plot
+# ax[0].imshow(I_C3_R1.data,origin = 'lower')
+# ax[0].set_title('Ridge')
+# # ax[0].legend()
+# # ax[0].grid()
+
+# # Second plot
+# ax[1].imshow(I_C3_OF.data,origin = 'lower')
+# ax[1].set_title('outflow')
+# # ax[1].legend()
+# # ax[1].grid()
+
+# ax[2].imshow(I_C3_rest.data,origin = 'lower')
+# ax[2].set_title('rest')
+
+# # Adjust layout
+# plt.tight_layout()
+
+# # Show the plots
+# plt.show()
+
+
+fig, ax = plt.subplots(2, 1, figsize=(12, 12))
+
+# First plot
+ax[0].imshow(I_C3_OF.data,origin = 'lower')
+ax[0].set_title('outflow')
+# ax[0].legend()
+# ax[0].grid()
+
+# Second plot
+ax[1].imshow(I_C3_rest.data,origin = 'lower')
+ax[1].set_title('rest')
+# ax[1].legend()
+# ax[1].grid()
+
+# ax[2].imshow(I_C3_rest.data,origin = 'lower')
+# ax[2].set_title('rest')
+
+# Adjust layout
+plt.tight_layout()
+
+# Show the plots
+plt.show()
+#%%
+
+
+# array1 = I_C3_R1_array
+# weights1 = eI_C3_R1_array
+
+# array2 = p_C3_R1_array
+# weights2 = ep_C3_R1_array
+
+array3 =I_C3_rest_array
+weights3 = eI_C3_rest_array
+
+array4 = p_C3_rest_array
+weights4 = ep_C3_rest_array
+
+array5 = I_C3_OF_array
+weights5 = eI_C3_OF_array
+
+array6 = p_C3_OF_array
+weights6 = ep_C3_OF_array
+
+plt.figure(figsize=(12,8))
+# plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(p{frac}) = C + $\alpha$log(I)'.format(frac = r'$\%$',linebreak='\n'))
+
+# param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+# valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+# data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+# res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+# label_temp = r'$\alpha${R}: {alpha_I:.3f}{pm}{error:.3f}'.format(R = r'$_{ridge}$',alpha_I = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_I:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha_I = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_I:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha_I = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+
+plt.title(r'$p\%$ vs I')
+plt.xscale('log')
+plt.yscale('log')
+plt.yticks([1e0,1e1])
+plt.xlabel('I')
+plt.ylabel(r'$p\%$')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+
+# %%
+
+
+# array1 = nh2_C3_R1_array
+# weights1 = np.ones_like(nh2_C3_R1_array)
+
+# array2 = p_C3_R1_array
+# weights2 = ep_C3_R1_array
+
+array3 =nh2_C3_rest_array
+weights3 = np.ones_like(nh2_C3_rest_array)
+
+array4 = p_C3_rest_array
+weights4 = ep_C3_rest_array
+
+array5 = nh2_C3_OF_array
+weights5 = np.ones_like(nh2_C3_OF_array)
+
+array6 = p_C3_OF_array
+weights6 = ep_C3_OF_array
+
+plt.figure(figsize=(12,8))
+# plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(p{frac}) = C + $\alpha$log($N$)'.format(frac = r'$\%$',linebreak='\n',nh2 = r'$_{N}$'))
+
+# param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+# valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+# data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+# res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+# label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{ridge}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+
+plt.title(r'$p\%$ vs N')
+plt.xscale('log')
+plt.yscale('log')
+plt.yticks([1e0,1e1])
+plt.xticks(np.array([1e22,1e23,1e24]))
+plt.xlabel('N')
+plt.ylabel(r'$p\%$')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+
+#%%
+
+# array1 = nh2_C3_R1_array
+# weights1 = np.ones_like(nh2_C3_R1_array)
+
+# array2 = s_C3_R1_array
+# weights2 = es_C3_R1_array
+
+array3 =nh2_C3_rest_array
+weights3 = np.ones_like(nh2_C3_rest_array)
+
+array4 = s_C3_rest_array
+weights4 = es_C3_rest_array
+
+array5 = nh2_C3_OF_array
+weights5 = np.ones_like(nh2_C3_OF_array)
+
+array6 = s_C3_OF_array
+weights6 = es_C3_OF_array
+
+plt.figure(figsize=(12,8))
+# plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(S) = C + $\alpha$log($N$)'.format(frac = r'$\%$',linebreak='\n',nh2 = r'$_{N}$'))
+
+# param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+# valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+# data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+# res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+# label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{ridge}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+
+plt.title(r'S vs N')
+plt.xscale('log')
+plt.yscale('log')
+plt.yticks([1e0,1e1])
+plt.xticks(np.array([1e22,1e23,1e24]))
+plt.xlabel('N')
+plt.ylabel(r'S')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+
+# %%
+
+# array2 = s_C3_R1_array
+# weights2 = es_C3_R1_array
+
+# array1 = p_C3_R1_array
+# weights1 = ep_C3_R1_array
+
+array4 =s_C3_rest_array
+weights4 = es_C3_rest_array
+
+array3 = p_C3_rest_array
+weights3 = ep_C3_rest_array
+
+array6 = s_C3_OF_array
+weights6 = es_C3_OF_array
+
+array5 = p_C3_OF_array
+weights5 = ep_C3_OF_array
+
+plt.figure(figsize=(12,8))
+# plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(S) = C + $\alpha$log(p{frac})'.format(frac = r'$\%$',linebreak='\n'))
+
+# param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+# valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+# data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+# res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+# label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{ridge}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+plt.title(r'S vs $p\%$ ')
+plt.xscale('log')
+plt.yscale('log')
+plt.ylabel('S')
+plt.xlabel(r'$p\%$')
+plt.tight_layout()
+plt.legend()
+plt.show()
+
+# %%
+# array1 = nh2_C3_R1_array
+# weights1 = np.ones_like(nh2_C3_R1_array)
+
+# array2 = p_C3_R1_array*s_C3_R1_array
+# weights2 = np.sqrt((ep_C3_R1_array*s_C3_R1_array)**2 + (es_C2_R1_array*p_C3_R1_array)**2)
+
+# array3 =
+# weights3 = np.ones_like(nh2_C3_rest_array)
+
+
+array3 =I_C3_rest_array
+weights3 = eI_C3_rest_array
+
+
+array4 = p_C3_rest_array*s_C3_rest_array
+weights4 = np.sqrt((ep_C3_rest_array*s_C3_rest_array)**2 + (es_C3_rest_array*p_C3_rest_array)**2)
+
+# array5 = nh2_C3_OF_array
+# weights5 = np.ones_like(nh2_C3_OF_array)
+
+array5 = I_C3_OF_array
+weights5 = eI_C3_OF_array
+
+
+array6 = p_C3_OF_array*s_C3_OF_array
+weights6 =  np.sqrt((ep_C3_OF_array*s_C3_OF_array)**2 + (es_C3_OF_array*p_C3_OF_array)**2)
+
+plt.figure(figsize=(12,8))
+# plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(p{frac}*S) = C + $\alpha$log($N$)'.format(frac = r'$\%$',linebreak='\n'))
+
+# param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+# valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+# data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+# res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+# label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{ridge}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+plt.title(r'$p\%*S$ vs $N$')
+plt.xlabel('N')
+plt.ylabel(r'$p\%*S$')
+plt.xscale('log')
+plt.yscale('log')
+plt.tight_layout()
+plt.legend()
+plt.show()
+
+# %%
+
+# array1 = nh2_C3_R1_array
+# weights1 = np.ones_like(nh2_C3_R1_array)
+
+array2 = s_C3_R1_array
+weights2 = es_C3_R1_array
+
+array3 =nh2_C3_rest_array
+weights3 = np.ones_like(nh2_C3_rest_array)
+
+array4 = s_C3_rest_array
+weights4 = es_C3_rest_array
+
+array5 = nh2_C3_OF_array
+weights5 = np.ones_like(nh2_C3_OF_array)
+
+array6 = s_C3_OF_array
+weights6 = es_C3_OF_array
+
+plt.figure(figsize=(12,8))
+# plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(S) = C + $\alpha$log($N$)'.format(frac = r'$\%$',linebreak='\n',nh2 = r'$_{N}$'))
+
+# param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+# valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+# data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+# res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+# label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{ridge}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_nh2:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha_nh2 = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+
+plt.title(r'S vs N')
+plt.xscale('log')
+plt.yscale('log')
+plt.yticks([1e0,1e1])
+plt.xticks(np.array([1e22,1e23,1e24]))
+plt.xlabel('N')
+plt.ylabel(r'S')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# %%
+
+
+array4 =s_C3_rest_array
+weights4 = es_C3_rest_array
+
+array3 =I_C3_rest_array
+weights3 = eI_C3_rest_array
+
+
+array6 = s_C3_OF_array
+weights6 = es_C3_OF_array
+
+array5 = I_C3_OF_array
+weights5 = eI_C3_OF_array
+
+plt.figure(figsize=(12,8))
+# plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(S) = C + $\alpha$log(I)'.format(frac = r'$\%$',linebreak='\n'))
+
+# param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+# valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+# data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+# res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+# label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{ridge}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+plt.title(r'S vs $I$ ')
+plt.xscale('log')
+plt.yscale('log')
+plt.ylabel('S')
+plt.xlabel(r'$I$')
+plt.tight_layout()
+plt.legend()
+plt.show()
+
+# %%
+
+# array1 = temp_C3_R1_array
+# weights1 = np.ones_like(temp_C3_R1_array)
+
+# array2 = p_C3_R1_array
+# weights2 = ep_C3_R1_array
+
+array3 =temp_C3_rest_array
+weights3 = np.ones_like(temp_C3_rest_array)
+
+
+array4 = p_C3_rest_array
+weights4 = ep_C3_rest_array
+
+
+array5 = temp_C3_OF_array
+weights5 = np.ones_like(temp_C3_OF_array)
+
+
+array6 = p_C3_OF_array
+weights6 = ep_C3_OF_array
+
+plt.figure(figsize=(12,8))
+# plt.scatter(array1,array2,c='#4575b4',label = 'ridge')
+plt.scatter(array3,array4,c='#d73027',label = 'rest')
+plt.scatter(array5,array6,c = '#7fbc41',label = r'OF{linebreak}log(p{frac}) = C + $\alpha$log(T)'.format(frac = r'$\%$',linebreak='\n'))
+
+# param,x,y = Functions.binning_equal_width(array1,array2,weights1,weights2,10)
+# valid = ~(np.isnan(array1)|np.isnan(array2)|np.isnan(weights1)|np.isnan(weights2))
+# data = (array1[valid],array2[valid],weights1[valid],weights2[valid])
+# res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+# label_temp = r'$\alpha${R}: {alpha_T:.3f}{pm}{error:.3f}'.format(R = r'$_{R1}$',alpha_T = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+# plt.plot(x,y,'#fdae61',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array3,array4,weights3,weights4,10)
+valid = ~(np.isnan(array3)|np.isnan(array4)|np.isnan(weights3)|np.isnan(weights4))
+data = (array3[valid],array4[valid],weights3[valid],weights4[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_T:.3f}{pm}{error:.3f}'.format(R = r'$_{rest}$',alpha_T = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#abdda4',linewidth = 3.5,label = label_temp)
+
+param,x,y = Functions.binning_equal_width(array5,array6,weights5,weights6,10)
+valid = ~(np.isnan(array5)|np.isnan(array6)|np.isnan(weights5)|np.isnan(weights6))
+data = (array5[valid],array6[valid],weights5[valid],weights6[valid])
+res = bootstrapscipy(data, Functions.binning_equal_width_vbootstrap,n_resamples=10000,paired = True,vectorized=False, random_state=0)
+label_temp = r'$\alpha${R}: {alpha_T:.3f}{pm}{error:.3f}'.format(R = r'$_{OF}$',alpha_T = param[1],pm = r'$\pm$',error=res.standard_error,linebreak='\n')
+plt.plot(x,y,'#ffff99',linewidth = 3.5,label = label_temp)
+plt.title(r'$p\%$ vs T')
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel('T')
+plt.ylabel(r'$p\%$')
+plt.tight_layout()
+plt.legend()
+plt.show()
+# %%
+s_C3_OF = S_map_deb.copy()
+es_C3_OF = sigma_S_map.copy()
+p_C3_OF = BlankedMapPol_2025.copy()
+ep_C3_OF = BlankedMapDebPolError_2025.copy()
+I_C3_OF = BlankedMapStokesI_2025.copy()
+eI_C3_OF = BlankedMapStokesIError_2025.copy()
+nh2_C3_OF = BlankedMapColumnDensity_2025.copy()
+micron8_C3_OF = BlankedMap8Mircon_2025.copy()
+temp_C3_OF = BlankedMapTemperature_2025.copy()
+
+s_C3_rest = S_map_deb.copy()
+es_C3_rest = sigma_S_map.copy()
+p_C3_rest = BlankedMapPol_2025.copy()
+ep_C3_rest = BlankedMapDebPolError_2025.copy()
+I_C3_rest = BlankedMapStokesI_2025.copy()
+eI_C3_rest = BlankedMapStokesIError_2025.copy()
+nh2_C3_rest = BlankedMapColumnDensity_2025.copy()
+micron8_C3_rest = BlankedMap8Mircon_2025.copy()
+temp_C3_rest = BlankedMapTemperature_2025.copy()
+
+# Selector = (MaskOF_2025.data != 1)
+
+# s_C3_R1.data[Selector] = np.nan
+# es_C3_R1.data[Selector] = np.nan
+# p_C3_R1.data[Selector] = np.nan
+# ep_C3_R1.data[Selector] = np.nan
+# I_C3_R1.data[Selector] = np.nan
+# eI_C3_R1.data[Selector] = np.nan
+# nh2_C3_R1.data[Selector] = np.nan
+# micron8_C3_R1.data[Selector] = np.nan
+# temp_C3_R1.data[Selector] = np.nan
+
+
+Selector = (MaskOF_2025.data != 7)
+
+s_C3_OF.data[Selector] = np.nan
+es_C3_OF.data[Selector] = np.nan
+p_C3_OF.data[Selector] = np.nan
+ep_C3_OF.data[Selector] = np.nan
+I_C3_OF.data[Selector] = np.nan
+eI_C3_OF.data[Selector] = np.nan
+nh2_C3_OF.data[Selector] = np.nan
+micron8_C3_OF.data[Selector] = np.nan
+temp_C3_OF.data[Selector] = np.nan
+
+
+
+
+# Selector = ((MaskOF_2025.data == 7)|(MaskOF_2025.data == 1))
+Selector = ~Selector
+s_C3_rest.data[Selector] = np.nan
+es_C3_rest.data[Selector] = np.nan
+p_C3_rest.data[Selector] = np.nan
+ep_C3_rest.data[Selector] = np.nan
+I_C3_rest.data[Selector] = np.nan
+eI_C3_rest.data[Selector] = np.nan
+nh2_C3_rest.data[Selector] = np.nan
+micron8_C3_rest.data[Selector] = np.nan
+temp_C3_rest.data[Selector] = np.nan
+
+
+
+s_C3_core = s_C3_rest.copy()
+es_C3_core = es_C3_rest.copy()
+p_C3_core = p_C3_rest.copy()
+ep_C3_core = ep_C3_rest.copy()
+I_C3_core = I_C3_rest.copy()
+eI_C3_core = eI_C3_rest.copy()
+nh2_C3_core = nh2_C3_rest.copy()
+micron8_C3_core = micron8_C3_rest.copy()
+temp_C3_core = temp_C3_rest.copy()
+
+Selector = (mask_core == 1)
+s_C3_rest.data[Selector] = np.nan
+es_C3_rest.data[Selector] = np.nan
+p_C3_rest.data[Selector] = np.nan
+ep_C3_rest.data[Selector] = np.nan
+I_C3_rest.data[Selector] = np.nan
+eI_C3_rest.data[Selector] = np.nan
+nh2_C3_rest.data[Selector] = np.nan
+micron8_C3_rest.data[Selector] = np.nan
+temp_C3_rest.data[Selector] = np.nan
+
+
+
+
+Selector = (mask_core == 0)
+s_C3_core.data[Selector] = np.nan
+es_C3_core.data[Selector] = np.nan
+p_C3_core.data[Selector] = np.nan
+ep_C3_core.data[Selector] = np.nan
+I_C3_core.data[Selector] = np.nan
+eI_C3_core.data[Selector] = np.nan
+nh2_C3_core.data[Selector] = np.nan
+micron8_C3_core.data[Selector] = np.nan
+temp_C3_core.data[Selector] = np.nan
+
+# s_C3_R1_array = s_C3_R1.data.flatten()[::4]
+# es_C3_R1_array = es_C3_R1.data.flatten()[::4]
+# p_C3_R1_array = p_C3_R1.data.flatten()[::4]
+# ep_C3_R1_array = ep_C3_R1.data.flatten()[::4]
+# I_C3_R1_array = I_C3_R1.data.flatten()[::4]
+# eI_C3_R1_array = eI_C3_R1.data.flatten()[::4]
+# nh2_C3_R1_array = nh2_C3_R1.data.flatten()[::4]
+# micron8_C3_R1_array = micron8_C3_R1.data.flatten()[::4]
+# temp_C3_R1_array = temp_C3_R1.data.flatten()[::4]
+
+
+s_C3_OF_array = s_C3_OF.data.flatten()[::4]
+es_C3_OF_array = es_C3_OF.data.flatten()[::4]
+p_C3_OF_array = p_C3_OF.data.flatten()[::4]
+ep_C3_OF_array = ep_C3_OF.data.flatten()[::4]
+I_C3_OF_array = I_C3_OF.data.flatten()[::4]
+eI_C3_OF_array = eI_C3_OF.data.flatten()[::4]
+nh2_C3_OF_array = nh2_C3_OF.data.flatten()[::4]
+micron8_C3_OF_array = micron8_C3_OF.data.flatten()[::4]
+temp_C3_OF_array = temp_C3_OF.data.flatten()[::4]
+
+
+s_C3_rest_array = s_C3_rest.data.flatten()[::4]
+es_C3_rest_array = es_C3_rest.data.flatten()[::4]
+p_C3_rest_array = p_C3_rest.data.flatten()[::4]
+ep_C3_rest_array = ep_C3_rest.data.flatten()[::4]
+I_C3_rest_array = I_C3_rest.data.flatten()[::4]
+eI_C3_rest_array = eI_C3_rest.data.flatten()[::4]
+nh2_C3_rest_array = nh2_C3_rest.data.flatten()[::4]
+micron8_C3_rest_array = micron8_C3_rest.data.flatten()[::4]
+temp_C3_rest_array = temp_C3_rest.data.flatten()[::4]
+
+s_C3_core_array = s_C3_core.data.flatten()[::4]
+es_C3_core_array = es_C3_core.data.flatten()[::4]
+p_C3_core_array = p_C3_core.data.flatten()[::4]
+ep_C3_core_array = ep_C3_core.data.flatten()[::4]
+I_C3_core_array = I_C3_core.data.flatten()[::4]
+eI_C3_core_array = eI_C3_core.data.flatten()[::4]
+nh2_C3_core_array = nh2_C3_core.data.flatten()[::4]
+micron8_C3_core_array = micron8_C3_core.data.flatten()[::4]
+temp_C3_core_array = temp_C3_core.data.flatten()[::4]
+
+
+# fig, ax = plt.subplots(3, 1, figsize=(12, 12))
+
+# # First plot
+# ax[0].imshow(I_C3_R1.data,origin = 'lower')
+# ax[0].set_title('Ridge')
+# # ax[0].legend()
+# # ax[0].grid()
+
+# # Second plot
+# ax[1].imshow(I_C3_OF.data,origin = 'lower')
+# ax[1].set_title('outflow')
+# # ax[1].legend()
+# # ax[1].grid()
+
+# ax[2].imshow(I_C3_rest.data,origin = 'lower')
+# ax[2].set_title('rest')
+
+# # Adjust layout
+# plt.tight_layout()
+
+# # Show the plots
+# plt.show()
+
+
+fig, ax = plt.subplots(2, 1, figsize=(12, 12))
+
+# First plot
+ax[0].imshow(I_C3_OF.data,origin = 'lower')
+ax[0].set_title('outflow')
+# ax[0].legend()
+# ax[0].grid()
+
+# Second plot
+ax[1].imshow(I_C3_rest.data,origin = 'lower')
+ax[1].set_title('rest')
+# ax[1].legend()
+# ax[1].grid()
+
+# ax[2].imshow(I_C3_rest.data,origin = 'lower')
+# ax[2].set_title('rest')
+
+# Adjust layout
+plt.tight_layout()
+
+# Show the plots
+plt.show()
+
+
+
+fig, ax = plt.subplots(2, 1, figsize=(12, 12))
+
+# First plot
+ax[0].imshow(I_C3_core.data,origin = 'lower')
+ax[0].set_title('outflow')
+# ax[0].legend()
+# ax[0].grid()
+
+# Second plot
+ax[1].imshow(I_C3_rest.data,origin = 'lower')
+ax[1].set_title('rest')
+# ax[1].legend()
+# ax[1].grid()
+
+# ax[2].imshow(I_C3_rest.data,origin = 'lower')
+# ax[2].set_title('rest')
+
+# Adjust layout
+plt.tight_layout()
+
+# Show the plots
 plt.show()
 
 # %%
